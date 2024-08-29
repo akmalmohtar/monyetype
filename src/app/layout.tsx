@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import Head from "next/head";
 import { cn } from "@/lib/utils";
+import { NavBar } from "@/components/NavBar";
 
 const ibm_plex_mono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -14,8 +14,6 @@ export const metadata: Metadata = {
   description: "",
 };
 
-const MonyetHeader = () => <h1>hahsdahsdha</h1>;
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -24,9 +22,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(ibm_plex_mono.className, "flex flex-col h-screen")}>
-        <header className="h-[15%] text-6xl text-center font-semibold p-8 tracking-wider">
-          Monye<span className="text-orange-600">t</span>ype
-          <span className="text-orange-600">.</span>
+        <header className="flex flex-col space-y-8 items-center text-6xl text-center font-semibold p-2 tracking-wider">
+          <span>
+            Monye<span className="text-orange-600">t</span>ype
+            <span className="text-orange-600">.</span>
+          </span>
+          <NavBar />
         </header>
         <main className={cn("h-full")}>{children}</main>
         <footer className={cn("h-[5%]")}>

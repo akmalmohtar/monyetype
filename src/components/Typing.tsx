@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { getRandomWords } from "../lib/getRandomWords";
 import ResultPage from "./Result";
-import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 import { DifficultyBar } from "./DifficultyBar";
 import { TDifficulty } from "@/types";
+import { Button } from "./ui/button";
 
 const TIMER: number = 99999999999999;
 const MAX_WORDS: number = 10;
@@ -191,12 +191,9 @@ const TypingTest: React.FC = () => {
                     <p>Time Left: {timer}s</p>
                     <p>Correct Words: {correctWords}</p>
                   </div>
-                  <button
-                    onClick={handleReset}
-                    className="bg-orange-600 text-white p-2 rounded"
-                  >
+                  <Button onClick={handleReset} variant="akmalmohtar">
                     Reset
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
