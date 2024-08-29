@@ -7,9 +7,9 @@ export function NavBar() {
   const param = usePathname();
 
   return (
-    <div className="w-[25%]">
+    <div className="w-[25%] tracking-normal">
       <Tabs value={param}>
-        <TabsList className="grid grid-cols-2 rounded p-0 bg-white">
+        <TabsList className="grid grid-cols-2 rounded p-0 ">
           <TabsTrigger value="/typing">
             <Link className="w-full" href={"/typing"}>
               Typing Test

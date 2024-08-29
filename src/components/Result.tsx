@@ -40,23 +40,23 @@ const ResultPage: React.FC<ResultPageProps> = ({
       : 0;
 
   return (
-    <div className="bg-white p-6 rounded shadow-md w-3/4 lg:w-11/12 max-w-screen-2xl ">
-      <h1 className="flex justify-between items-center text-2xl font-bold mb-4 text-black ">
-        Results
-      </h1>
-      <p className="text-black">Words Per Minute (WPM): {wpm.toFixed(2)}</p>
-      <p className="text-black">Accuracy: {accuracy.toFixed(2)}%</p>
-      <p className="text-black">Total Words Typed: {correctWords}</p>
-      <p className="text-black">Errors: {errors}</p>
-      <button
-        onClick={() => window.location.reload()}
-        className="bg-orange-600 text-white p-2 rounded mt-4"
-      >
-        Try Again
-      </button>
+    <div className="bg-white p-6 rounded shadow-md w-11/12 max-w-screen-2xl ">
+      <div className="flex flex-col items-center justify-center ">
+        <h1 className="text-2xl font-bold mb-4 text-black">Results</h1>
+        <p className="text-black">Words Per Minute (WPM): {wpm.toFixed(2)}</p>
+        <p className="text-black">Accuracy: {accuracy.toFixed(2)}%</p>
+        <p className="text-black">Total Words Typed: {correctWords}</p>
+        <p className="text-black">Errors: {errors}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="bg-orange-600 text-white p-2 rounded mt-4"
+        >
+          Try Again
+        </button>
 
-      <div className="mt-6">
-        <h2 className="text-xl font-bold mb-4 text-black">WPM Over Time</h2>
+        <h2 className="mt-6 text-xl font-bold mb-4 text-black">
+          WPM Over Time
+        </h2>
         <LineChart
           width={1300}
           height={300}
