@@ -134,10 +134,11 @@ const TypingTest: React.FC = () => {
 
   const handleDifficultyChange = (tabValue: string) => {
     setDifficulty(tabValue as TDifficulty);
+    handleReset();
   };
 
   return (
-    <div className="flex flex-col items-center justify-start py-48 min-h-screen bg-gray-100">
+    <div className="flex flex-col h-full border-2 items-center justify-start py-48  bg-gray-100">
       {testEnded ? (
         <ResultPage
           correctWords={correctWords}
@@ -149,7 +150,10 @@ const TypingTest: React.FC = () => {
         />
       ) : (
         <>
-          <DifficultyBar difficulty={difficulty} onDifficultyChange={handleDifficultyChange}/>
+          <DifficultyBar
+            difficulty={difficulty}
+            onDifficultyChange={handleDifficultyChange}
+          />
           <div>
             {words.length > 0 && (
               <div className="mb-10 text-black text-4xl w-3/4 lg:w-11/12 mx-auto ">
@@ -163,11 +167,11 @@ const TypingTest: React.FC = () => {
                           letterIndex === currentLetterIndex
                             ? "bg-gray-300" // Highlight current letter
                             : wordIndex === currentWordIndex &&
-                              letterIndex < currentLetterIndex
-                            ? "text-orange-600" // Correctly typed letters in the current word
-                            : wordIndex < currentWordIndex
-                            ? "text-orange-600" // Correctly typed words
-                            : ""
+                                letterIndex < currentLetterIndex
+                              ? "text-orange-600" // Correctly typed letters in the current word
+                              : wordIndex < currentWordIndex
+                                ? "text-orange-600" // Correctly typed words
+                                : ""
                         }`}
                       >
                         {letter}
