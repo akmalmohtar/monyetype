@@ -3,8 +3,10 @@ import React, { useState, useEffect } from "react";
 import { getRandomWords } from "../lib/getRandomWords";
 import ResultPage from "./Result";
 import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
+import { DifficultyBar } from "./DifficultyBar";
+import { TDifficulty } from "@/types";
 
-const TIMER: number = 10;
+const TIMER: number = 99999999999999;
 const MAX_WORDS: number = 10;
 
 interface WPMEntry {
@@ -25,9 +27,7 @@ const TypingTest: React.FC = () => {
   const [wpmHistory, setWpmHistory] = useState<WPMEntry[]>([]);
   const [lastUpdate, setLastUpdate] = useState<number>(0);
   console.log("🚀 ~ lastUpdate:", lastUpdate);
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
-    "medium"
-  );
+  const [difficulty, setDifficulty] = useState<TDifficulty>("medium");
 
   useEffect(() => {
     setWords(getRandomWords(MAX_WORDS, difficulty).split(" "));
@@ -132,11 +132,8 @@ const TypingTest: React.FC = () => {
     setWpmHistory([]); // Reset WPM history
   };
 
-  const handleDifficultyChange = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    const value = event.currentTarget.value;
-    setDifficulty(value as "easy" | "medium" | "hard");
+  const handleDifficultyChange = (tabValue: string) => {
+    setDifficulty(tabValue as TDifficulty);
   };
 
   return (
@@ -152,21 +149,7 @@ const TypingTest: React.FC = () => {
         />
       ) : (
         <>
-          <div className="pb-10">
-            <Menubar value={difficulty}>
-              <MenubarMenu>
-                <MenubarTrigger value="easy" onClick={handleDifficultyChange}>
-                  Easy
-                </MenubarTrigger>
-                <MenubarTrigger value="medium" onClick={handleDifficultyChange}>
-                  Medium
-                </MenubarTrigger>
-                <MenubarTrigger value="hard" onClick={handleDifficultyChange}>
-                  Hard
-                </MenubarTrigger>
-              </MenubarMenu>
-            </Menubar>
-          </div>
+          <DifficultyBar difficulty={difficulty} onDifficultyChange={handleDifficultyChange}/>
           <div>
             {words.length > 0 && (
               <div className="mb-10 text-black text-4xl w-3/4 lg:w-11/12 mx-auto ">

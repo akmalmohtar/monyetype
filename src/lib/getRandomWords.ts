@@ -13,7 +13,7 @@ export const getRandomWords = (
       case "hard":
         return word.length >= 9;
       default:
-        throw new Error(`Invalid difficulty level: ${difficulty}`);
+        return word.length >= 5 && word.length <= 8;
     }
   });
 
