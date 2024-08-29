@@ -5,8 +5,9 @@ import ResultPage from "./Result";
 import { DifficultyBar } from "./DifficultyBar";
 import { TDifficulty } from "@/types";
 import { Button } from "./ui/button";
+import { TextGenerateEffect } from "./ui/text-generate-effect";
 
-const TIMER: number = 99999999999999;
+const TIMER: number = 10;
 const MAX_WORDS: number = 10;
 
 interface WPMEntry {
@@ -26,7 +27,6 @@ const TypingTest: React.FC = () => {
   const [testEnded, setTestEnded] = useState<boolean>(false);
   const [wpmHistory, setWpmHistory] = useState<WPMEntry[]>([]);
   const [lastUpdate, setLastUpdate] = useState<number>(0);
-  console.log("🚀 ~ lastUpdate:", lastUpdate);
   const [difficulty, setDifficulty] = useState<TDifficulty>("medium");
 
   useEffect(() => {
@@ -138,7 +138,7 @@ const TypingTest: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full border-2 items-center justify-start py-48  bg-gray-100">
+    <div className="flex flex-col h-full items-center justify-start py-48 size-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
       {testEnded ? (
         <ResultPage
           correctWords={correctWords}
@@ -185,17 +185,22 @@ const TypingTest: React.FC = () => {
           </div>
           <>
             {words.length > 0 && (
-              <div className="bg-white p-6 rounded shadow-md w-3/4 lg:w-1/2 mx-auto">
-                <div className="flex justify-between items-center text-black">
-                  <div>
-                    <p>Time Left: {timer}s</p>
-                    <p>Correct Words: {correctWords}</p>
-                  </div>
-                  <Button onClick={handleReset} variant="akmalmohtar">
-                    Reset
-                  </Button>
+              <>
+                <div className="relative mt-10">
+                  <div className=" bg-orange-600 w-36 h-36 rounded-full absolute -top-5 right-80"></div>
                 </div>
-              </div>
+                <div className="bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-1/2  mx-auto border border-white/40">
+                  <div className="flex justify-between items-center text-black">
+                    <div>
+                      <p>Time Left: {timer}s</p>
+                      <p>Correct Words: {correctWords}</p>
+                    </div>
+                    <Button onClick={handleReset} variant="akmalmohtar">
+                      Reset
+                    </Button>
+                  </div>
+                </div>
+              </>
             )}
           </>
         </>
