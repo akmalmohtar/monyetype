@@ -6,9 +6,9 @@ import { useRhythmTimer } from "@/hooks/use-rhythm-timer";
 import { cn } from "@/lib/utils";
 import { LOWER_CASE } from "@/constants/letters";
 import { motion } from "framer-motion";
-import { Input } from "./ui/input";
-const DURATION = 3000;
-const G_DURATION = 30000;
+import SettingModal from "./SettingModal";
+const DURATION = 1500;
+const G_DURATION = 10000;
 
 function getRandomLetter(prevLetter?: string) {
   if (prevLetter) {
@@ -121,6 +121,8 @@ export function Rhythm() {
   const [gameWin, setGameWin] = useState(false);
   const [letter, setLetter] = useState<string>();
 
+  const gameTotallyOver = gameOver && gGameOver;
+
   const handleStartStopGame = () => {
     if (started) {
       setStarted(false);
@@ -169,7 +171,7 @@ export function Rhythm() {
       }
 
       // if correct letter pressed
-      if (event.key === letter) {
+      if (event.key === letter && !gGameOver && !gameOver) {
         setScore((prev) => prev + 1);
         skip();
       }
@@ -195,6 +197,7 @@ export function Rhythm() {
       <div className="flex flex-col space-y-4 items-center bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-[20%] mx-auto border border-white/40">
         <ScoreBox score={score} />
         <TimerBox remainingTime={gRemainingTime} duration={G_DURATION} />
+        <SettingModal />
       </div>
       <div className="flex flex-col space-y-2 h-[80px] w-[120px]">
         {!!gameOver || !!gGameOver ? (
