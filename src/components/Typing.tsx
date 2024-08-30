@@ -5,6 +5,7 @@ import ResultPage from "./Result";
 import { DifficultyBar } from "./DifficultyBar";
 import { TDifficulty } from "@/types";
 import { Button } from "./ui/button";
+import { BackgroundGradient } from "./ui/background-gradient";
 
 const TIMER: number = 10;
 const MAX_WORDS: number = 10;
@@ -185,24 +186,25 @@ const TypingTest: React.FC = () => {
           <>
             {words.length > 0 && (
               <>
-                <div className="relative mt-10">
+                <div className="relative mt-10 w-1/2">
                   <div
-                    className={`w-36 h-36 rounded-full absolute -top-5 right-80 border-8 border-white ${
+                    className={`w-40 h-40 rounded-full absolute -bottom-[4rem] -left-[4rem] border-8 border-white ${
                       started
                         ? "border-r-orange-600 animate-spin"
                         : "bg-orange-600"
                     }`}
                   ></div>
-                </div>
-                <div className="bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-1/2  mx-auto border border-white/40">
-                  <div className="flex justify-between items-center text-black">
-                    <div>
-                      <p>Time Left: {timer}s</p>
-                      <p>Correct Words: {correctWords}</p>
+                  <div className="bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-full mx-auto border border-white/40">
+                    <div className="flex justify-between items-center text-black">
+                      <div>
+                        <p>Time Left: {timer}s</p>
+                        <p>Correct Words: {correctWords}</p>
+                      </div>
+
+                      <Button onClick={handleReset} variant="akmalmohtar">
+                        Reset
+                      </Button>
                     </div>
-                    <Button onClick={handleReset} variant="akmalmohtar">
-                      Reset
-                    </Button>
                   </div>
                 </div>
               </>
