@@ -5,7 +5,7 @@ import ResultPage from "./Result";
 import { DifficultyBar } from "./DifficultyBar";
 import { TDifficulty } from "@/types";
 import { Button } from "./ui/button";
-import { BackgroundGradient } from "./ui/background-gradient";
+import { motion } from "framer-motion";
 
 const TIMER: number = 10;
 const MAX_WORDS: number = 10;
@@ -187,14 +187,28 @@ const TypingTest: React.FC = () => {
             {words.length > 0 && (
               <>
                 <div className="relative mt-10 w-1/2">
-                  <div
+                  <motion.div
+                    initial={{ x: -40, y: 40, opacity: 0 }}
+                    animate={{ x: 0, y: 0, opacity: 1 }}
+                    transition={{
+                      ease: "anticipate",
+                      duration: 2,
+                    }}
                     className={`w-40 h-40 rounded-full absolute -bottom-[4rem] -left-[4rem] border-8 border-white ${
                       started
                         ? "border-r-orange-600 animate-spin"
                         : "bg-orange-600"
                     }`}
-                  ></div>
-                  <div className="bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-full mx-auto border border-white/40">
+                  ></motion.div>
+                  <motion.div
+                    initial={{ x: 20, y: -20, opacity: 0 }}
+                    animate={{ x: 0, y: 0, opacity: 1 }}
+                    transition={{
+                      ease: "anticipate",
+                      duration: 2,
+                    }}
+                    className="bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-full mx-auto border border-white/40"
+                  >
                     <div className="flex justify-between items-center text-black">
                       <div>
                         <p>Time Left: {timer}s</p>
@@ -205,7 +219,7 @@ const TypingTest: React.FC = () => {
                         Reset
                       </Button>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
               </>
             )}
