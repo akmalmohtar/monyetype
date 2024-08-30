@@ -121,6 +121,8 @@ export function Rhythm() {
   const [gameWin, setGameWin] = useState(false);
   const [letter, setLetter] = useState<string>();
 
+  const gameTotallyOver = gameOver && gGameOver;
+
   const handleStartStopGame = () => {
     if (started) {
       setStarted(false);
