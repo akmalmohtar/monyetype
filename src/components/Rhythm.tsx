@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { useRhythmTimer } from "@/hooks/use-rhythm-timer";
 import { cn } from "@/lib/utils";
 import { LOWER_CASE } from "@/constants/letters";
 import { motion } from "framer-motion";
+import { Input } from "./ui/input";
 const DURATION = 3000;
-const G_DURATION = 15000;
+const G_DURATION = 30000;
 
 function getRandomLetter(prevLetter?: string) {
   if (prevLetter) {
@@ -39,14 +40,28 @@ function ScoreBox({ score }: { score: number }) {
 
 function LetterDisplayBox({
   letter,
-  gameOver = false,
+  gameWin,
+  gameOver,
 }: {
   letter?: string;
-  gameOver?: boolean;
+  gameWin: boolean;
+  gameOver: boolean;
 }) {
   if (!letter) return null;
 
-  const gameOverUI = <span className="text-5xl">YOU LOSE</span>;
+  const display = (() => {
+    if (!gameOver) {
+      return <span className="text-7xl">{letter}</span>;
+    }
+
+    if (gameWin && gameOver) {
+      return <span className="text-5xl">YOU WIN</span>;
+    }
+
+    if (!gameWin && gameOver) {
+      return <span className="text-5xl">YOU LOSE</span>;
+    }
+  })();
 
   return (
     <motion.span
@@ -60,9 +75,9 @@ function LetterDisplayBox({
         ease: "linear",
         duration: 0.5,
       }}
-      className={`h-40 text-9xl`}
+      className={`h-28`}
     >
-      {gameOver ? gameOverUI : letter}
+      {display}
     </motion.span>
   );
 }
@@ -98,6 +113,7 @@ export function Rhythm() {
   } = useRhythmTimer(G_DURATION);
   const [score, setScore] = useState(0);
   const [started, setStarted] = useState(false);
+  const [gameWin, setGameWin] = useState(false);
   const [letter, setLetter] = useState<string>();
 
   const handleStartStopGame = () => {
@@ -130,7 +146,13 @@ export function Rhythm() {
       gStop();
       setStarted(false);
     }
-  }, [gameOver, stop, setStarted, gGameOver, gStop]);
+  }, [gameOver, gGameOver, stop, gStop, setStarted]);
+
+  useEffect(() => {
+    if (score >= G_DURATION / 1000) {
+      setGameWin(true);
+    }
+  }, [score]);
 
   // to trigger button press and score
   useEffect(() => {
@@ -157,10 +179,18 @@ export function Rhythm() {
 
   return (
     <div className="flex flex-col h-full border-2 items-center justify-evenly  bg-gray-100">
-      <LetterDisplayBox letter={letter} gameOver={gameOver || gGameOver} />
-      <ScoreBox score={score} />
-      <TimerBox remainingTime={remainingTime} duration={DURATION} />
-      <TimerBox remainingTime={gRemainingTime} duration={G_DURATION} />
+      <div className="flex flex-col items-center">
+        <LetterDisplayBox
+          letter={letter}
+          gameWin={gameWin}
+          gameOver={gGameOver || gameOver}
+        />
+        <TimerBox remainingTime={remainingTime} duration={DURATION} />
+      </div>
+      <div className="flex flex-col space-y-4 items-center bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-[20%] mx-auto border border-white/40">
+        <ScoreBox score={score} />
+        <TimerBox remainingTime={gRemainingTime} duration={G_DURATION} />
+      </div>
       <div className="flex flex-col space-y-2 h-[80px] w-[120px]">
         {!!gameOver || !!gGameOver ? (
           <Button
