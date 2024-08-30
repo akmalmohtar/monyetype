@@ -6,6 +6,7 @@ import { DifficultyBar } from "./DifficultyBar";
 import { TDifficulty } from "@/types";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
+import TypingSettingModal from "./TypingSettingModal";
 
 const TIMER: number = 10;
 const MAX_WORDS: number = 10;
@@ -23,15 +24,17 @@ const TypingTest: React.FC = () => {
   const [totalTypedChars, setTotalTypedChars] = useState<number>(0);
   const [errors, setErrors] = useState<number>(0);
   const [timer, setTimer] = useState<number>(TIMER);
+  console.log("🚀 ~ timer:", timer);
   const [started, setStarted] = useState<boolean>(false);
   const [testEnded, setTestEnded] = useState<boolean>(false);
   const [wpmHistory, setWpmHistory] = useState<WPMEntry[]>([]);
   const [lastUpdate, setLastUpdate] = useState<number>(0);
   const [difficulty, setDifficulty] = useState<TDifficulty>("medium");
+  const [maxWords, setMaxWords] = useState<number>(MAX_WORDS);
 
   useEffect(() => {
-    setWords(getRandomWords(MAX_WORDS, difficulty).split(" "));
-  }, [difficulty]);
+    setWords(getRandomWords(maxWords, difficulty).split(" "));
+  }, [difficulty, maxWords]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -126,7 +129,7 @@ const TypingTest: React.FC = () => {
     setCorrectWords(0);
     setTotalTypedChars(0);
     setErrors(0);
-    setTimer(TIMER);
+    setTimer(timer);
     setStarted(false);
     setTestEnded(false);
     setWpmHistory([]); // Reset WPM history
@@ -134,6 +137,16 @@ const TypingTest: React.FC = () => {
 
   const handleDifficultyChange = (tabValue: string) => {
     setDifficulty(tabValue as TDifficulty);
+    handleReset();
+  };
+
+  // const handleTimerChange = (value: number) => {
+  //   setTimer(value);
+  //   handleReset();
+  // };
+
+  const handleMaxWordsChange = (value: number) => {
+    setMaxWords(value);
     handleReset();
   };
 
@@ -230,10 +243,15 @@ const TypingTest: React.FC = () => {
                         <p>Time Left: {timer}s</p>
                         <p>Correct Words: {correctWords}</p>
                       </div>
-
-                      <Button onClick={handleReset} variant="akmalmohtar">
-                        Reset
-                      </Button>
+                      <span className="flex gap-2">
+                        <TypingSettingModal
+                          // onTimerChange={handleTimerChange}
+                          onMaxWordsChange={handleMaxWordsChange}
+                        />
+                        <Button onClick={handleReset} variant="akmalmohtar">
+                          Reset
+                        </Button>
+                      </span>
                     </div>
                   </motion.div>
                 </div>
