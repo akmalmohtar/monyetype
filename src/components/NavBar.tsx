@@ -4,7 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export function NavBar() {
-  const param = usePathname();
+  let param = usePathname();
+
+  if (param === "/") {
+    param = "/typing";
+  }
 
   return (
     <div className="w-[25%] tracking-normal">
