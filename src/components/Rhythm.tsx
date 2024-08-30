@@ -83,9 +83,11 @@ function LetterDisplayBox({
 }
 
 function TimerBox({
+  label,
   remainingTime,
   duration,
 }: {
+  label?: string;
   remainingTime: number;
   duration: number;
 }) {
@@ -93,10 +95,13 @@ function TimerBox({
   const danger = remainingTime < 0.4 * duration;
 
   return (
-    <span
-      className={cn("text-base", danger && "text-red-500 animate-pulse-fast")}
-    >
-      {formattedTime}
+    <span>
+      {!!label && <span>{label}: </span>}
+      <span
+        className={cn("text-base", danger && "text-red-500 animate-pulse-fast")}
+      >
+        {formattedTime}
+      </span>
     </span>
   );
 }
@@ -136,7 +141,7 @@ export function Rhythm() {
 
   // To trigger render next letter
   useEffect(() => {
-    setLetter(getRandomLetter());
+    setLetter(getRandomLetter(letter));
   }, [round]);
 
   // handle gameover
