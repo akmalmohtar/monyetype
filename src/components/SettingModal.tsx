@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -15,31 +15,32 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Checkbox } from "./ui/checkbox";
 import type { TRhythmSettings } from "@/types";
+import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
 
 export default function SettingModal() {
+  const [open, setOpen] = useState(false);
+  const { rhythmSettings, saveSettings } = useRhythmSettingsStore((state) => ({
+    rhythmSettings: state.rhythmSettings,
+    saveSettings: state.saveSettings,
+  }));
+
   const {
     getValues,
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<TRhythmSettings>({
-    defaultValues: {
-      gameDuration: 30000,
-      letterDuration: 1500,
-      enableNumbers: true,
-      enableSpecialCharacters: true,
-      enableUppercaseLetters: true,
-      enableUppercaseSpecialCharacters: true,
-    },
+    defaultValues: rhythmSettings,
   });
 
   const onSubmit = (values: TRhythmSettings) => {
-    console.log("values", values);
+    saveSettings(values);
+    setOpen(false);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={"ghost"}>
           <GearIcon />
@@ -139,7 +140,7 @@ export default function SettingModal() {
                 Close
               </Button>
             </DialogClose>
-            <Button variant={"akmalmohtar"} type="submit">
+            <Button variant={"akmalmohtar"} type="submit" disabled={!isDirty}>
               Save
             </Button>
           </DialogFooter>

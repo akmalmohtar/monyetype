@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { LOWER_CASE } from "@/constants/letters";
 import { motion } from "framer-motion";
 import SettingModal from "./SettingModal";
+import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
 const DURATION = 1500;
 const G_DURATION = 10000;
 
@@ -107,15 +108,18 @@ function TimerBox({
 }
 
 export function Rhythm() {
+  const { rhythmSettings } = useRhythmSettingsStore((state) => ({
+    rhythmSettings: state.rhythmSettings,
+  }));
   const { round, remainingTime, gameOver, start, skip, stop, resetGame } =
-    useRhythmTimer(DURATION);
+    useRhythmTimer(Number(rhythmSettings.letterDuration));
   const {
     remainingTime: gRemainingTime,
     start: gStart,
     stop: gStop,
     gameOver: gGameOver,
     resetGame: gResetGame,
-  } = useRhythmTimer(G_DURATION);
+  } = useRhythmTimer(Number(rhythmSettings.gameDuration));
   const [score, setScore] = useState(0);
   const [started, setStarted] = useState(false);
   const [gameWin, setGameWin] = useState(false);

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useRhythmTimer(duration: number) {
   const [round, setRound] = useState(0);
@@ -43,11 +43,15 @@ export function useRhythmTimer(duration: number) {
     start();
   };
 
-  const resetGame = () => {
+  const resetGame = useCallback(() => {
     setRound(0);
     setRemainingTime(duration);
     setGameOver(false);
-  };
+  }, [duration]);
+
+  useEffect(() => {
+    resetGame();
+  }, [duration, resetGame]);
 
   return { round, remainingTime, gameOver, start, skip, stop, resetGame };
 }
