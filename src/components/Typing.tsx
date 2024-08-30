@@ -158,7 +158,16 @@ const TypingTest: React.FC = () => {
             {words.length > 0 && (
               <div className="mb-10 text-black text-4xl w-3/4 lg:w-11/12 mx-auto ">
                 {words.map((word, wordIndex) => (
-                  <span key={wordIndex} className="mr-2">
+                  <motion.span
+                    initial={{ opacity: 0.5 }}
+                    animate={{ opacity: 1 }}
+                    transition={{
+                      duration: 0.1,
+                      delay: wordIndex / 10,
+                    }}
+                    key={`${wordIndex || difficulty}-${difficulty}`}
+                    className="mr-2"
+                  >
                     {word.split("").map((letter, letterIndex) => (
                       <span
                         key={letterIndex}
@@ -178,7 +187,7 @@ const TypingTest: React.FC = () => {
                       </span>
                     ))}
                     {wordIndex < words.length - 1 ? " " : ""}
-                  </span>
+                  </motion.span>
                 ))}
               </div>
             )}
@@ -188,11 +197,18 @@ const TypingTest: React.FC = () => {
               <>
                 <div className="relative mt-10 w-1/2">
                   <motion.div
-                    initial={{ x: -40, y: 40, opacity: 0 }}
-                    animate={{ x: 0, y: 0, opacity: 1 }}
+                    key={difficulty}
+                    initial={{ x: -40, y: 40, opacity: 0, scale: 0.5 }}
+                    animate={{ x: 0, y: 0, opacity: 1, scale: 1 }}
                     transition={{
-                      ease: "anticipate",
-                      duration: 2,
+                      duration: 0.5,
+                      ease: [0, 0.71, 0.2, 1.01],
+                      scale: {
+                        type: "spring",
+                        damping: 5,
+                        stiffness: 100,
+                        restDelta: 0.001,
+                      },
                     }}
                     className={`w-40 h-40 rounded-full absolute -bottom-[4rem] -left-[4rem] border-8 border-white ${
                       started
