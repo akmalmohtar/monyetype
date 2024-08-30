@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { LOWER_CASE } from "@/constants/letters";
 import { motion } from "framer-motion";
 const DURATION = 3000;
-const G_DURATION = 5000;
+const G_DURATION = 15000;
 
 function getRandomLetter(prevLetter?: string) {
   if (prevLetter) {
@@ -27,7 +27,7 @@ function ScoreBox({ score }: { score: number }) {
         animate={{ x: 0, opacity: 1 }}
         transition={{
           ease: "easeInOut",
-          duration: 0.5,
+          duration: 1,
         }}
         className="text-2xl"
       >
@@ -46,22 +46,23 @@ function LetterDisplayBox({
 }) {
   if (!letter) return null;
 
-  if (gameOver) {
-    return <span className="text-9xl">YOU LOSE</span>;
-  }
+  const gameOverUI = <span className="text-5xl">YOU LOSE</span>;
 
   return (
     <motion.span
       key={letter}
       initial={{ y: -10, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      animate={{
+        y: 0,
+        opacity: 1,
+      }}
       transition={{
         ease: "linear",
         duration: 0.5,
       }}
-      className="text-7xl"
+      className={`h-40 text-9xl`}
     >
-      {letter}
+      {gameOver ? gameOverUI : letter}
     </motion.span>
   );
 }
@@ -93,6 +94,7 @@ export function Rhythm() {
     start: gStart,
     stop: gStop,
     gameOver: gGameOver,
+    resetGame: gResetGame,
   } = useRhythmTimer(G_DURATION);
   const [score, setScore] = useState(0);
   const [started, setStarted] = useState(false);
@@ -112,9 +114,11 @@ export function Rhythm() {
 
   const handleStartOver = () => {
     resetGame();
+    gResetGame();
     setScore(0);
   };
 
+  // To trigger render next letter
   useEffect(() => {
     setLetter(getRandomLetter());
   }, [round]);
@@ -128,6 +132,7 @@ export function Rhythm() {
     }
   }, [gameOver, stop, setStarted, gGameOver, gStop]);
 
+  // to trigger button press and score
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!started && letter === event.key) {
@@ -136,6 +141,7 @@ export function Rhythm() {
         setStarted(true);
       }
 
+      // if correct letter pressed
       if (event.key === letter) {
         setScore((prev) => prev + 1);
         skip();
@@ -156,21 +162,22 @@ export function Rhythm() {
       <TimerBox remainingTime={remainingTime} duration={DURATION} />
       <TimerBox remainingTime={gRemainingTime} duration={G_DURATION} />
       <div className="flex flex-col space-y-2 h-[80px] w-[120px]">
-        <Button
-          onClick={handleStartStopGame}
-          disabled={gameOver || gGameOver}
-          variant="akmalmohtar"
-          className="w-full"
-        >
-          {started ? "Stop" : "Start"}
-        </Button>
-        {(!!gameOver || !!gGameOver) && (
+        {!!gameOver || !!gGameOver ? (
           <Button
             onClick={handleStartOver}
             variant="akmalmohtar"
             className="w-full fade-in-10"
           >
             Start Over
+          </Button>
+        ) : (
+          <Button
+            onClick={handleStartStopGame}
+            disabled={gameOver || gGameOver}
+            variant="akmalmohtar"
+            className="w-full"
+          >
+            {started ? "Stop" : "Start"}
           </Button>
         )}
       </div>
