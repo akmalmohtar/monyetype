@@ -36,7 +36,7 @@ export function useRhythmTimer(duration: number) {
     }
   };
 
-  const restart = () => {
+  const skip = () => {
     stop();
     setRound((prev) => prev + 1);
     setRemainingTime(duration);
@@ -49,5 +49,5 @@ export function useRhythmTimer(duration: number) {
     setGameOver(false);
   };
 
-  return { round, remainingTime, gameOver, start, restart, stop, resetGame };
+  return { round, remainingTime, gameOver, start, skip, stop, resetGame };
 }
