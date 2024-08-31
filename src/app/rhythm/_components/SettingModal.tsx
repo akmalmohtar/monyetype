@@ -6,25 +6,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
+} from "../../../components/ui/dialog";
+import { Button } from "../../../components/ui/button";
 import { DialogClose, DialogDescription } from "@radix-ui/react-dialog";
-import { GearIcon } from "./icons/GearIcon";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Checkbox } from "./ui/checkbox";
+import { GearIcon } from "../../../components/icons/GearIcon";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
+import { Checkbox } from "../../../components/ui/checkbox";
 import type { TRhythmSettings } from "@/types";
 import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
 import { useForm } from "@tanstack/react-form";
-
-const initialValues: TRhythmSettings = {
-  gameDuration: 30000,
-  letterDuration: 1500,
-  enableNumbers: false,
-  enableSpecialCharacters: false,
-  enableUppercaseLetters: false,
-  enableUppercaseSpecialCharacters: false,
-};
 
 export default function SettingModal() {
   const [open, setOpen] = useState(false);

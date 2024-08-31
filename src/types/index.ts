@@ -1,5 +1,4 @@
 import type { CheckedState } from "@radix-ui/react-checkbox";
-import type { Updater } from "@tanstack/react-form";
 
 export type TDifficulty = "easy" | "medium" | "hard";
 
