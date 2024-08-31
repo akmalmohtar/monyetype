@@ -151,7 +151,7 @@ const TypingTest: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start w-full h-full py-12">
+    <div className="flex flex-col items-center justify-center w-full h-full py-12">
       {testEnded ? (
         <ResultPage
           correctWords={correctWords}
