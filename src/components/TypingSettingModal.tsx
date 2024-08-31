@@ -24,10 +24,17 @@ const TypingSettingModal = ({
   // const [timer, setTimer] = useState<number>(10);
   // console.log("🚀 ~ timer2:", timer);
   const [maxWords, setMaxWords] = useState<number>(10);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Dialog>
-      <DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger
+        onKeyDown={(event) => {
+          if (event.key === " " || event.key === "Enter") {
+            event.preventDefault();
+          }
+        }}
+      >
         <GearIcon />
       </DialogTrigger>
       <DialogContent>
@@ -63,6 +70,7 @@ const TypingSettingModal = ({
             variant={"akmalmohtar"}
             onClick={() => {
               onMaxWordsChange(maxWords);
+              setIsOpen(false);
             }}
           >
             Save
