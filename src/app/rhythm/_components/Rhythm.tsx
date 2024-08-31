@@ -1,22 +1,19 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { Button } from "./ui/button";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button } from "../../../components/ui/button";
 import { useRhythmTimer } from "@/hooks/use-rhythm-timer";
 import { cn } from "@/lib/utils";
-import { LOWER_CASE } from "@/constants/letters";
+import {
+  LOWER_CASE,
+  UPPER_CASE,
+  NUMBERS,
+  SPECIAL_CHARS_NO_SHIFT,
+  SPECIAL_CHARS_SHIFT,
+} from "@/constants/letters";
 import { motion } from "framer-motion";
 import SettingModal from "./SettingModal";
-const DURATION = 1500;
-const G_DURATION = 10000;
-
-function getRandomLetter(prevLetter?: string) {
-  if (prevLetter) {
-    const l = LOWER_CASE.replace(prevLetter, "");
-    return l[Math.floor(Math.random() * l.length)];
-  }
-  return LOWER_CASE[Math.floor(Math.random() * LOWER_CASE.length)];
-}
+import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
 
 function ScoreBox({ score }: { score: number }) {
   return (
@@ -38,30 +35,28 @@ function ScoreBox({ score }: { score: number }) {
   );
 }
 
-function LetterDisplayBox({
-  letter,
-  gameWin,
-  gameOver,
+function ResultBox({
+  win,
+  durationPlayed,
+  score,
 }: {
-  letter?: string;
-  gameWin: boolean;
-  gameOver: boolean;
+  win: boolean;
+  durationPlayed: number;
+  score: number;
 }) {
+  const resultMessage = win ? "YOU WIN" : "YOU LOSE";
+  const speed = (score / (durationPlayed / 1000)).toFixed(2);
+
+  return (
+    <div className="flex flex-col items-center space-y-4">
+      <span className="text-5xl">{resultMessage}</span>
+      <span>{`Your speed: ${speed} character(s) per second`}</span>
+    </div>
+  );
+}
+
+function LetterDisplayBox({ letter }: { letter?: string }) {
   if (!letter) return null;
-
-  const display = (() => {
-    if (!gameOver) {
-      return <span className="text-7xl">{letter}</span>;
-    }
-
-    if (gameWin && gameOver) {
-      return <span className="text-5xl">YOU WIN</span>;
-    }
-
-    if (!gameWin && gameOver) {
-      return <span className="text-5xl">YOU LOSE</span>;
-    }
-  })();
 
   return (
     <motion.span
@@ -75,9 +70,9 @@ function LetterDisplayBox({
         ease: "linear",
         duration: 0.5,
       }}
-      className={`h-28`}
+      className={`text-7xl`}
     >
-      {display}
+      {letter}
     </motion.span>
   );
 }
@@ -107,19 +102,46 @@ function TimerBox({
 }
 
 export function Rhythm() {
+  const { gameDuration, letterDuration, ...rhythmSettings } =
+    useRhythmSettingsStore((state) => ({
+      ...state.rhythmSettings,
+      gameDuration: state.rhythmSettings.gameDuration,
+      letterDuration: state.rhythmSettings.letterDuration,
+    }));
   const { round, remainingTime, gameOver, start, skip, stop, resetGame } =
-    useRhythmTimer(DURATION);
+    useRhythmTimer(letterDuration);
   const {
     remainingTime: gRemainingTime,
     start: gStart,
     stop: gStop,
     gameOver: gGameOver,
     resetGame: gResetGame,
-  } = useRhythmTimer(G_DURATION);
+  } = useRhythmTimer(gameDuration);
   const [score, setScore] = useState(0);
   const [started, setStarted] = useState(false);
   const [gameWin, setGameWin] = useState(false);
   const [letter, setLetter] = useState<string>();
+
+  const charactersPool = useMemo(() => {
+    let charactersPool = [...LOWER_CASE];
+    if (rhythmSettings.enableNumbers) {
+      charactersPool = [...charactersPool, ...NUMBERS];
+    }
+
+    if (rhythmSettings.enableSpecialCharacters) {
+      charactersPool = [...charactersPool, ...SPECIAL_CHARS_NO_SHIFT];
+    }
+
+    if (rhythmSettings.enableUppercaseLetters) {
+      charactersPool = [...charactersPool, ...UPPER_CASE];
+    }
+
+    if (rhythmSettings.enableUppercaseSpecialCharacters) {
+      charactersPool = [...charactersPool, ...SPECIAL_CHARS_SHIFT];
+    }
+
+    return charactersPool;
+  }, [rhythmSettings]);
 
   const handleStartStopGame = () => {
     if (started) {
@@ -133,15 +155,18 @@ export function Rhythm() {
     }
   };
 
-  const handleStartOver = () => {
+  const handleRetry = () => {
     resetGame();
     gResetGame();
     setScore(0);
+    setGameWin(false);
   };
 
   // To trigger render next letter
   useEffect(() => {
-    setLetter(getRandomLetter(letter));
+    const i = Math.floor(Math.random() * (charactersPool.length - 1));
+    const _charactersPool = charactersPool.filter((c) => c !== letter); // prevent repeating same letter back to back
+    setLetter(_charactersPool[i]);
   }, [round]);
 
   // handle gameover
@@ -151,13 +176,7 @@ export function Rhythm() {
       gStop();
       setStarted(false);
     }
-  }, [gameOver, gGameOver, stop, gStop, setStarted]);
-
-  useEffect(() => {
-    if (score >= G_DURATION / 1000) {
-      setGameWin(true);
-    }
-  }, [score]);
+  }, [gameOver, gGameOver, setStarted, stop, gStop]);
 
   // to trigger button press and score
   useEffect(() => {
@@ -173,6 +192,10 @@ export function Rhythm() {
         setScore((prev) => prev + 1);
         skip();
       }
+
+      if (score >= gameDuration / 1000) {
+        setGameWin(true);
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -180,31 +203,52 @@ export function Rhythm() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [started, letter, skip, start, gStart]);
+  }, [
+    started,
+    letter,
+    skip,
+    start,
+    gStart,
+    gGameOver,
+    gameOver,
+    score,
+    gameDuration,
+  ]);
 
   return (
-    <div className="flex flex-col h-full  items-center justify-evenly ">
-      <div className="flex flex-col items-center">
-        <LetterDisplayBox
-          letter={letter}
-          gameWin={gameWin}
-          gameOver={gGameOver || gameOver}
-        />
-        <TimerBox remainingTime={remainingTime} duration={DURATION} />
+    <div className="flex flex-col h-full border-2 items-center justify-evenly  bg-gray-100">
+      <div className="flex flex-col items-center justify-center h-40">
+        {gameOver || gGameOver ? (
+          <ResultBox
+            win={gameWin}
+            durationPlayed={gameDuration - gRemainingTime}
+            score={score}
+          />
+        ) : (
+          <div className="flex flex-col space-y-8">
+            <LetterDisplayBox letter={letter} />
+            {!!letter && (
+              <TimerBox
+                remainingTime={remainingTime}
+                duration={letterDuration}
+              />
+            )}
+          </div>
+        )}
       </div>
       <div className="flex flex-col space-y-4 items-center bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-[20%] mx-auto border border-white/40">
         <ScoreBox score={score} />
-        <TimerBox remainingTime={gRemainingTime} duration={G_DURATION} />
+        <TimerBox remainingTime={gRemainingTime} duration={gameDuration} />
         <SettingModal />
       </div>
       <div className="flex flex-col space-y-2 h-[80px] w-[120px]">
-        {!!gameOver || !!gGameOver ? (
+        {gameOver || gGameOver ? (
           <Button
-            onClick={handleStartOver}
+            onClick={handleRetry}
             variant="akmalmohtar"
             className="w-full fade-in-10"
           >
-            Start Over
+            Retry
           </Button>
         ) : (
           <Button
