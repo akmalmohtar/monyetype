@@ -183,7 +183,7 @@ export function Rhythm() {
   }, [started, letter, skip, start, gStart]);
 
   return (
-    <div className="flex flex-col h-full border-2 items-center justify-evenly  bg-gray-100">
+    <div className="flex flex-col h-full  items-center justify-evenly ">
       <div className="flex flex-col items-center">
         <LetterDisplayBox
           letter={letter}

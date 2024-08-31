@@ -21,8 +21,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(ibm_plex_mono.className, "flex flex-col h-screen")}>
+      <head>
         <link rel="icon" href="/favicon.png" sizes="any" />
+      </head>
+      <body
+        className={cn(
+          ibm_plex_mono.className,
+          "flex flex-col h-screen overflow-hidden",
+        )}
+      >
         <header className="flex flex-col space-y-8 items-center text-6xl text-center font-semibold p-2 tracking-wider bg-gradient-to-b from-gray-300 to-white">
           <span>
             Monye<span className="text-orange-600">t</span>ype
@@ -30,10 +37,10 @@ export default function RootLayout({
           </span>
           <NavBar />
         </header>
-        <main className={cn("h-full")}>{children}</main>
-        <footer
-          className={cn("h-[5%] flex items-center justify-center bg-black")}
-        >
+        <main className="flex-grow overflow-auto bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+          {children}
+        </main>
+        <footer className="h-[5%] flex items-center justify-center bg-black">
           <span className="text-center text-sm text-white">
             © 2024 | Akmal Mohtar & Wan Nor Adzahari
           </span>

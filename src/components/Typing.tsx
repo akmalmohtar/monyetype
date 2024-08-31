@@ -151,7 +151,7 @@ const TypingTest: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full items-center justify-start py-48 size-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+    <div className="flex flex-col items-center justify-start w-full h-full py-12">
       {testEnded ? (
         <ResultPage
           correctWords={correctWords}
