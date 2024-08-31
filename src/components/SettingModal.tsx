@@ -1,5 +1,4 @@
 import React, { useReducer, useState } from "react";
-import { useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,7 @@ import { Label } from "./ui/label";
 import { Checkbox } from "./ui/checkbox";
 import type { TRhythmSettings } from "@/types";
 import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
+import { useForm } from "@tanstack/react-form";
 
 const initialValues: TRhythmSettings = {
   gameDuration: 30000,
@@ -33,10 +33,15 @@ export default function SettingModal() {
     saveSettings: state.saveSettings,
   }));
 
-  const handleSubmit = (values: TRhythmSettings) => {
-    saveSettings(values);
+  const handleSubmit = ({ value }: { value: TRhythmSettings }) => {
+    saveSettings(value);
     setOpen(false);
   };
+
+  const tanForm = useForm<TRhythmSettings>({
+    defaultValues: rhythmSettings,
+    onSubmit: handleSubmit,
+  });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -52,58 +57,117 @@ export default function SettingModal() {
             Configure your gameplay experience
           </DialogDescription>
         </DialogHeader>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            tanForm.handleSubmit();
+          }}
+          className="space-y-4"
+        >
+          <tanForm.Field name="gameDuration">
+            {(field) => (
+              <div className="grid grid-cols-2 space-x-4">
+                <Label htmlFor={field.name}>
+                  Game duration in milliseconds
+                </Label>
+                <Input
+                  id={field.name}
+                  type="number"
+                  min={0}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(+e.target.value)}
+                />
+              </div>
+            )}
+          </tanForm.Field>
 
-        <div className="grid grid-cols-2 space-x-4">
-          <Label htmlFor="game-duration">Game duration in milliseconds</Label>
-          <Input id="game-duration" type="number" min={0} />
-        </div>
+          <tanForm.Field name="letterDuration">
+            {(field) => (
+              <div className="grid grid-cols-2 space-x-4">
+                <Label htmlFor={field.name}>
+                  Duration per letter in milliseconds
+                </Label>
+                <Input
+                  id={field.name}
+                  type="number"
+                  min={0}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(+e.target.value)}
+                />
+              </div>
+            )}
+          </tanForm.Field>
 
-        <div className="grid grid-cols-2 space-x-4">
-          <Label htmlFor="letter-duration">
-            Duration per letter in milliseconds
-          </Label>
-          <Input id="letter-duration" type="number" min={0} />
-        </div>
+          <tanForm.Field name="enableNumbers">
+            {(field) => (
+              <div className="flex space-x-2">
+                <Checkbox
+                  id={field.name}
+                  checked={field.state.value}
+                  onCheckedChange={(e) => field.handleChange(e)}
+                />
+                <Label htmlFor={field.name}>Enable numbers</Label>
+              </div>
+            )}
+          </tanForm.Field>
 
-        <div className="flex space-x-2">
-          <Checkbox id="numbers-enable" onCheckedChange={(value) => {}} />
-          <Label htmlFor="numbers-enable">Enable numbers</Label>
-        </div>
+          <tanForm.Field name="enableSpecialCharacters">
+            {(field) => (
+              <div className="flex space-x-2">
+                <Checkbox
+                  id={field.name}
+                  checked={field.state.value}
+                  onCheckedChange={(e) => field.handleChange(e)}
+                />
+                <Label htmlFor={field.name}>Enable special characters</Label>
+              </div>
+            )}
+          </tanForm.Field>
 
-        <div className="flex space-x-2">
-          <Checkbox id="special-chars-enable" onCheckedChange={(value) => {}} />
-          <Label htmlFor="special-chars-enable">
-            Enable special characters
-          </Label>
-        </div>
+          <tanForm.Field name="enableUppercaseLetters">
+            {(field) => (
+              <div className="flex space-x-2">
+                <Checkbox
+                  id={field.name}
+                  checked={field.state.value}
+                  onCheckedChange={(e) => field.handleChange(e)}
+                />
+                <Label htmlFor={field.name}>Enable uppercase letters</Label>
+              </div>
+            )}
+          </tanForm.Field>
 
-        <div className="flex space-x-2">
-          <Checkbox
-            id="uppercase-chars-enable"
-            onCheckedChange={(value) => {}}
-          />
-          <Label htmlFor="uppercase-chars-enable">
-            Enable uppercase letters
-          </Label>
-        </div>
-
-        <div className="flex space-x-2">
-          <Checkbox id="uppercase-special-chars-enable" />
-          <Label htmlFor="uppercase-special-chars-enable">
-            Enable uppercase special characters (special characters that
-            requires you to hold shift)
-          </Label>
-        </div>
-        <DialogFooter className="sm:justify-start">
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
-            </Button>
-          </DialogClose>
-          <Button variant={"akmalmohtar"} type="submit">
-            Save
-          </Button>
-        </DialogFooter>
+          <tanForm.Field name="enableUppercaseSpecialCharacters">
+            {(field) => (
+              <div className="flex space-x-2">
+                <Checkbox
+                  id={field.name}
+                  checked={field.state.value}
+                  onCheckedChange={(e) => field.handleChange(e)}
+                />
+                <Label htmlFor={field.name}>
+                  Enable uppercase special characters (special characters that
+                  requires you to hold shift)
+                </Label>
+              </div>
+            )}
+          </tanForm.Field>
+          <DialogFooter className="sm:justify-start">
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                Close
+              </Button>
+            </DialogClose>
+            <tanForm.Subscribe>
+              {() => (
+                <Button variant={"akmalmohtar"} type="submit">
+                  Save
+                </Button>
+              )}
+            </tanForm.Subscribe>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
