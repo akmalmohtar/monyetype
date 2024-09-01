@@ -17,7 +17,7 @@ import type { TRhythmSettings } from "@/types";
 import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
 import { useForm } from "@tanstack/react-form";
 
-export default function SettingModal() {
+export default function SettingModal({ onOpen }: { onOpen: () => void }) {
   const [open, setOpen] = useState(false);
   const { rhythmSettings, saveSettings } = useRhythmSettingsStore((state) => ({
     rhythmSettings: state.rhythmSettings,
@@ -37,7 +37,7 @@ export default function SettingModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={"ghost"}>
+        <Button variant={"ghost"} onClick={onOpen}>
           <GearIcon />
         </Button>
       </DialogTrigger>
@@ -86,6 +86,19 @@ export default function SettingModal() {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(+e.target.value)}
                 />
+              </div>
+            )}
+          </tanForm.Field>
+
+          <tanForm.Field name="enableNextLetter">
+            {(field) => (
+              <div className="flex space-x-2">
+                <Checkbox
+                  id={field.name}
+                  checked={field.state.value}
+                  onCheckedChange={(e) => field.handleChange(e)}
+                />
+                <Label htmlFor={field.name}>Enable next letter</Label>
               </div>
             )}
           </tanForm.Field>

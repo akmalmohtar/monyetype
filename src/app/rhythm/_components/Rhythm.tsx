@@ -4,16 +4,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { useRhythmTimer } from "@/hooks/use-rhythm-timer";
 import { cn } from "@/lib/utils";
-import {
-  LOWER_CASE,
-  UPPER_CASE,
-  NUMBERS,
-  SPECIAL_CHARS_NO_SHIFT,
-  SPECIAL_CHARS_SHIFT,
-} from "@/constants/letters";
 import { motion } from "framer-motion";
 import SettingModal from "./SettingModal";
 import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
+import { useRandomLetter } from "@/hooks/use-random-letter";
 
 function ScoreBox({ score }: { score: number }) {
   return (
@@ -55,25 +49,51 @@ function ResultBox({
   );
 }
 
-function LetterDisplayBox({ letter }: { letter?: string }) {
-  if (!letter) return null;
+function LetterDisplayBox({
+  letters,
+  enableNextLetter = false,
+}: {
+  letters?: [string, string];
+  enableNextLetter?: boolean;
+}) {
+  if (!letters) return null;
 
   return (
-    <motion.span
-      key={letter}
-      initial={{ y: -10, opacity: 0 }}
-      animate={{
-        y: 0,
-        opacity: 1,
-      }}
-      transition={{
-        ease: "linear",
-        duration: 0.5,
-      }}
-      className={`text-7xl`}
-    >
-      {letter}
-    </motion.span>
+    <div className="grid grid-cols-3 space-x-6">
+      <span>{/*just empty span */}</span>
+      <motion.span
+        key={`${letters[0]}-0`}
+        initial={{ x: 20, opacity: 0 }}
+        animate={{
+          x: -10,
+          opacity: 1,
+        }}
+        transition={{
+          ease: "anticipate",
+          duration: 0.3,
+        }}
+        className={`text-7xl`}
+      >
+        {letters[0]}
+      </motion.span>
+      {enableNextLetter && (
+        <motion.span
+          key={`${letters[1]}-1`}
+          initial={{ x: 0, opacity: 0 }}
+          animate={{
+            x: 0,
+            opacity: 0.5,
+          }}
+          transition={{
+            ease: "anticipate",
+            duration: 0.3,
+          }}
+          className={`text-4xl text-gray-500`}
+        >
+          {letters[1]}
+        </motion.span>
+      )}
+    </div>
   );
 }
 
@@ -120,28 +140,7 @@ export function Rhythm() {
   const [score, setScore] = useState(0);
   const [started, setStarted] = useState(false);
   const [gameWin, setGameWin] = useState(false);
-  const [letter, setLetter] = useState<string>();
-
-  const charactersPool = useMemo(() => {
-    let charactersPool = [...LOWER_CASE];
-    if (rhythmSettings.enableNumbers) {
-      charactersPool = [...charactersPool, ...NUMBERS];
-    }
-
-    if (rhythmSettings.enableSpecialCharacters) {
-      charactersPool = [...charactersPool, ...SPECIAL_CHARS_NO_SHIFT];
-    }
-
-    if (rhythmSettings.enableUppercaseLetters) {
-      charactersPool = [...charactersPool, ...UPPER_CASE];
-    }
-
-    if (rhythmSettings.enableUppercaseSpecialCharacters) {
-      charactersPool = [...charactersPool, ...SPECIAL_CHARS_SHIFT];
-    }
-
-    return charactersPool;
-  }, [rhythmSettings]);
+  const { letters, get } = useRandomLetter(rhythmSettings);
 
   const handleStartStopGame = () => {
     if (started) {
@@ -164,9 +163,7 @@ export function Rhythm() {
 
   // To trigger render next letter
   useEffect(() => {
-    const i = Math.floor(Math.random() * (charactersPool.length - 1));
-    const _charactersPool = charactersPool.filter((c) => c !== letter); // prevent repeating same letter back to back
-    setLetter(_charactersPool[i]);
+    get();
   }, [round]);
 
   // handle gameover
@@ -181,14 +178,14 @@ export function Rhythm() {
   // to trigger button press and score
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!started && letter === event.key) {
+      if (!started && letters[0] === event.key) {
         start();
         gStart();
         setStarted(true);
       }
 
       // if correct letter pressed
-      if (event.key === letter && !gGameOver && !gameOver) {
+      if (event.key === letters[0] && !gGameOver && !gameOver) {
         setScore((prev) => prev + 1);
         skip();
       }
@@ -205,7 +202,7 @@ export function Rhythm() {
     };
   }, [
     started,
-    letter,
+    letters,
     skip,
     start,
     gStart,
@@ -225,9 +222,12 @@ export function Rhythm() {
             score={score}
           />
         ) : (
-          <div className="flex flex-col space-y-8">
-            <LetterDisplayBox letter={letter} />
-            {!!letter && (
+          <div className="flex flex-col space-y-8 items-center">
+            <LetterDisplayBox
+              letters={letters}
+              enableNextLetter={!!rhythmSettings.enableNextLetter}
+            />
+            {!!letters[0] && (
               <TimerBox
                 remainingTime={remainingTime}
                 duration={letterDuration}
@@ -239,7 +239,7 @@ export function Rhythm() {
       <div className="flex flex-col space-y-4 items-center bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-[20%] mx-auto border border-white/40">
         <ScoreBox score={score} />
         <TimerBox remainingTime={gRemainingTime} duration={gameDuration} />
-        <SettingModal />
+        <SettingModal onOpen={handleRetry} />
       </div>
       <div className="flex flex-col space-y-2 h-[80px] w-[120px]">
         {gameOver || gGameOver ? (

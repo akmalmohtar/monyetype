@@ -9,6 +9,7 @@ type RhythmSettingsState = {
 const initialRhythmSettings: TRhythmSettings = {
   gameDuration: 15000,
   letterDuration: 1500,
+  enableNextLetter: false,
   enableNumbers: false,
   enableSpecialCharacters: false,
   enableUppercaseLetters: false,
