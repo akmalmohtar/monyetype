@@ -90,6 +90,19 @@ export default function SettingModal() {
             )}
           </tanForm.Field>
 
+          <tanForm.Field name="enableNextLetter">
+            {(field) => (
+              <div className="flex space-x-2">
+                <Checkbox
+                  id={field.name}
+                  checked={field.state.value}
+                  onCheckedChange={(e) => field.handleChange(e)}
+                />
+                <Label htmlFor={field.name}>Enable next letter</Label>
+              </div>
+            )}
+          </tanForm.Field>
+
           <tanForm.Field name="enableNumbers">
             {(field) => (
               <div className="flex space-x-2">
