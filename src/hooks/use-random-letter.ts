@@ -37,7 +37,7 @@ export function useRandomLetter(config: Config) {
   const get = useCallback(() => {
     setLetters((prev) => {
       const i = Math.floor(Math.random() * (charactersPool.length - 1));
-      const _charactersPool = charactersPool.filter((c) => c !== prev[0]); // prevent repeating same letter back to back
+      const _charactersPool = charactersPool.filter((c) => c !== prev[1]); // prevent repeating same letter back to back
       const next = _charactersPool[i];
       return [prev[1], next];
     });

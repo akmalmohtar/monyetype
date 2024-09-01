@@ -4,13 +4,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { useRhythmTimer } from "@/hooks/use-rhythm-timer";
 import { cn } from "@/lib/utils";
-import {
-  LOWER_CASE,
-  UPPER_CASE,
-  NUMBERS,
-  SPECIAL_CHARS_NO_SHIFT,
-  SPECIAL_CHARS_SHIFT,
-} from "@/constants/letters";
 import { motion } from "framer-motion";
 import SettingModal from "./SettingModal";
 import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
@@ -246,7 +239,7 @@ export function Rhythm() {
       <div className="flex flex-col space-y-4 items-center bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-[20%] mx-auto border border-white/40">
         <ScoreBox score={score} />
         <TimerBox remainingTime={gRemainingTime} duration={gameDuration} />
-        <SettingModal />
+        <SettingModal onOpen={handleRetry} />
       </div>
       <div className="flex flex-col space-y-2 h-[80px] w-[120px]">
         {gameOver || gGameOver ? (

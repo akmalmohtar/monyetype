@@ -17,7 +17,7 @@ import type { TRhythmSettings } from "@/types";
 import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
 import { useForm } from "@tanstack/react-form";
 
-export default function SettingModal() {
+export default function SettingModal({ onOpen }: { onOpen: () => void }) {
   const [open, setOpen] = useState(false);
   const { rhythmSettings, saveSettings } = useRhythmSettingsStore((state) => ({
     rhythmSettings: state.rhythmSettings,
@@ -37,7 +37,7 @@ export default function SettingModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={"ghost"}>
+        <Button variant={"ghost"} onClick={onOpen}>
           <GearIcon />
         </Button>
       </DialogTrigger>
