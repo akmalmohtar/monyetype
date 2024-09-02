@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { useRhythmTimer } from "@/hooks/use-rhythm-timer";
 import { cn } from "@/lib/utils";
