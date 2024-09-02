@@ -6,6 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { z } from "zod";
+
+const LoginSchema = z.object({
+  email: z.string().min(1).email("Invalid email"),
+  password: z.string().min(1),
+});
 
 export default function LoginPage() {
   const emailRef = useRef<HTMLInputElement | null>(null);
@@ -13,11 +19,18 @@ export default function LoginPage() {
 
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
-    const loginPayload = {
+    const loginData = {
       email: emailRef.current?.value,
       password: passwordRef.current?.value,
     };
-    console.log("🚀 ~ handleLogin ~ loginPayload:", loginPayload);
+
+    let zLoginData: typeof loginData;
+    try {
+      zLoginData = LoginSchema.parse(loginData);
+      console.log("Login Data:", JSON.stringify(zLoginData, null, 4));
+    } catch (error) {
+      alert("Incorrect data type");
+    }
   };
 
   return (
