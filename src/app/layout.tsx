@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { NavBar } from "@/components/NavBar";
 
 const ibm_plex_mono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -35,7 +34,6 @@ export default function RootLayout({
             Monye<span className="text-orange-600">t</span>ype
             <span className="text-orange-600">.</span>
           </span>
-          <NavBar />
         </header>
         <main className="flex-grow overflow-auto bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
           {children}

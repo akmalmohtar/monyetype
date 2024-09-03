@@ -6,13 +6,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "../../../components/ui/dialog";
-import { Button } from "../../../components/ui/button";
-import { DialogClose, DialogDescription } from "@radix-ui/react-dialog";
-import { GearIcon } from "../../../components/icons/GearIcon";
-import { Input } from "../../../components/ui/input";
-import { Label } from "../../../components/ui/label";
-import { Checkbox } from "../../../components/ui/checkbox";
+  DialogClose,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { GearIcon } from "@/components/icons/GearIcon";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { TRhythmSettings } from "@/types";
 import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
 import { useForm } from "@tanstack/react-form";

@@ -1,8 +1,14 @@
-import TypingTest from "@/components/Typing";
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const App = () => {
-  return <TypingTest/>;
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/game");
+  }, [router]);
+
+  return <></>;
 };
 
 export default App;
