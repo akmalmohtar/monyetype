@@ -1,12 +1,14 @@
 "use client";
 
-import React, { FormEvent, useRef } from "react";
+import React, { FormEvent } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { z } from "zod";
+import { login } from "@/actions/auth";
+import { useFormState, useFormStatus } from "react-dom";
 
 const LoginSchema = z.object({
   email: z.string().min(1).email("Invalid email"),
@@ -14,42 +16,32 @@ const LoginSchema = z.object({
 });
 
 export default function LoginPage() {
-  const emailRef = useRef<HTMLInputElement | null>(null);
-  const passwordRef = useRef<HTMLInputElement | null>(null);
-
-  const handleLogin = (e: FormEvent) => {
-    e.preventDefault();
-    const loginData = {
-      email: emailRef.current?.value,
-      password: passwordRef.current?.value,
-    };
-
-    let zLoginData: typeof loginData;
-    try {
-      zLoginData = LoginSchema.parse(loginData);
-      console.log("Login Data:", JSON.stringify(zLoginData, null, 4));
-    } catch (error) {
-      alert("Incorrect data type");
-    }
-  };
+  const [state, action] = useFormState(login, undefined);
+  const { pending } = useFormStatus();
 
   return (
     <motion.form
-      onSubmit={handleLogin}
+      action={action}
       initial={{ y: 0, opacity: 0 }}
       animate={{ y: 80, opacity: 1 }}
       transition={{ ease: "easeIn" }}
     >
       <Card className="w-[400px] space-y-4">
         <div>
-          <Label>Email</Label>
-          <Input type="email" ref={emailRef} />
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" name="email" type="email" />
+          {state?.errors.email && (
+            <p className="text-sm text-red-500">{state.errors.email}</p>
+          )}
         </div>
         <div>
-          <Label>Password</Label>
-          <Input type="password" ref={passwordRef} />
+          <Label htmlFor="password">Password</Label>
+          <Input id="password" name="password" type="password" />
+          {state?.errors.password && (
+            <p className="text-sm text-red-500">{state.errors.password}</p>
+          )}
         </div>
-        <Button type="submit" variant={"akmalmohtar"}>
+        <Button type="submit" variant={"akmalmohtar"} disabled={pending}>
           Login
         </Button>
       </Card>
