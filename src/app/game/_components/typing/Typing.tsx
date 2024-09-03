@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { getRandomWords } from "../lib/getRandomWords";
+import { getRandomWords } from "@/lib/getRandomWords";
 import ResultPage from "./Result";
 import { DifficultyBar } from "./DifficultyBar";
 import { TDifficulty } from "@/types";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import TypingSettingModal from "./TypingSettingModal";
 

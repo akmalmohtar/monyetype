@@ -9,8 +9,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { GearIcon } from "@radix-ui/react-icons";
-import { Slider } from "./ui/slider";
-import { Button } from "./ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
 
 type TypeSettingModalProps = {
   // onTimerChange: any;
