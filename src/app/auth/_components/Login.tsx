@@ -1,21 +1,15 @@
 "use client";
 
-import React, { FormEvent } from "react";
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { z } from "zod";
 import { login } from "@/actions/auth";
 import { useFormState, useFormStatus } from "react-dom";
 
-const LoginSchema = z.object({
-  email: z.string().min(1).email("Invalid email"),
-  password: z.string().min(1),
-});
-
-export default function LoginPage() {
+export default function Login() {
   const [state, action] = useFormState(login, undefined);
   const { pending } = useFormStatus();
 
