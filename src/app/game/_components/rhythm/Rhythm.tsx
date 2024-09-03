@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../../../components/ui/button";
 import { useRhythmTimer } from "@/hooks/use-rhythm-timer";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -213,7 +213,7 @@ export function Rhythm() {
   ]);
 
   return (
-    <div className="flex flex-col h-full items-center justify-evenly ">
+    <div className="flex flex-col space-y-8 items-center justify-evenly">
       <div className="flex flex-col items-center justify-center h-40">
         {gameOver || gGameOver ? (
           <ResultBox
@@ -236,31 +236,29 @@ export function Rhythm() {
           </div>
         )}
       </div>
-      <div className="flex flex-col space-y-4 items-center bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg w-[20%] mx-auto border border-white/40">
+      <div className="flex flex-col space-y-4 w-[400px] items-center bg-white/40 backdrop-blur-sm p-6 rounded shadow-lg mx-auto border border-white/40">
         <ScoreBox score={score} />
         <TimerBox remainingTime={gRemainingTime} duration={gameDuration} />
         <SettingModal onOpen={handleRetry} />
       </div>
-      <div className="flex flex-col space-y-2 h-[80px] w-[120px]">
-        {gameOver || gGameOver ? (
-          <Button
-            onClick={handleRetry}
-            variant="akmalmohtar"
-            className="w-full fade-in-10"
-          >
-            Retry
-          </Button>
-        ) : (
-          <Button
-            onClick={handleStartStopGame}
-            disabled={gameOver || gGameOver}
-            variant="akmalmohtar"
-            className="w-full"
-          >
-            {started ? "Stop" : "Start"}
-          </Button>
-        )}
-      </div>
+      {gameOver || gGameOver ? (
+        <Button
+          onClick={handleRetry}
+          variant="akmalmohtar"
+          className="w-[150px] fade-in-10"
+        >
+          Retry
+        </Button>
+      ) : (
+        <Button
+          onClick={handleStartStopGame}
+          disabled={gameOver || gGameOver}
+          variant="akmalmohtar"
+          className="w-[150px]"
+        >
+          {started ? "Stop" : "Start"}
+        </Button>
+      )}
     </div>
   );
 }
