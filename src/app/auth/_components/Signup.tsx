@@ -45,11 +45,7 @@ export default function Signup() {
         </div>
         <div>
           <Label htmlFor="confirmPassword">Confirm password</Label>
-          <Input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="confirmPassword"
-          />
+          <Input id="confirmPassword" name="confirmPassword" type="password" />
         </div>
         <Button type="submit" variant={"akmalmohtar"} disabled={pending}>
           Login
