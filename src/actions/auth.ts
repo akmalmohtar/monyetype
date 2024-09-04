@@ -1,4 +1,5 @@
 import { z } from "zod";
+const bcrypt = require("bcryptjs");
 
 type LoginFormState =
   | {
@@ -48,13 +49,27 @@ export async function signup(state: SignupFormState, formData: FormData) {
     return { password: ["Passwords do not match!"] };
   }
 
-  const validateFields = SignupSchema.safeParse({
-    username: formData.get("username"),
-    email: formData.get("email"),
-    password: formData.get("password"),
-  });
+  let payload = {
+    username: formData.get("username")?.toString(),
+    email: formData.get("email")?.toString(),
+    password: formData.get("password")?.toString(),
+  };
+
+  const validateFields = SignupSchema.safeParse(payload);
 
   if (!validateFields.success) {
     return { errors: validateFields.error.flatten().fieldErrors };
+  }
+
+  const hashedPassword = bcrypt.hash(payload.password, 10);
+  payload = { ...payload, password: hashedPassword };
+
+  try {
+    await fetch("/api/users/", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    return { message: "Fail to sign up!" };
   }
 }
