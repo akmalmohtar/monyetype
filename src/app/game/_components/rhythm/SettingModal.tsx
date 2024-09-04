@@ -99,7 +99,7 @@ export default function SettingModal({ onOpen }: { onOpen: () => void }) {
                   checked={field.state.value}
                   onCheckedChange={(e) => field.handleChange(e)}
                 />
-                <Label htmlFor={field.name}>Enable next letter</Label>
+                <Label htmlFor={field.name}>Enable next letter preview</Label>
               </div>
             )}
           </tanForm.Field>
