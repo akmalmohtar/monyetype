@@ -4,7 +4,7 @@ export const users = sqliteTable("users", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   username: text("username"),
   email: text("email").unique(),
-  password: text("password", { mode: "json" }),
+  password: text("password"),
 });
 
 export type TUser = typeof users.$inferSelect;
