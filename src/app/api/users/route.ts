@@ -1,25 +1,16 @@
-import { apiPost } from "../database";
+import { db } from "@/db/database";
+import { users } from "@/db/schema/user-schema";
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   const { username, email, password } = await req.json();
 
-  const query = `
-    INSERT INTO users(username, email, password)
-    VALUES(?, ?, ?);
-  `;
+  const result = await db.insert(users).values({ username, email, password });
 
-  const values = [username, email, password];
+  return Response.json(result);
+}
 
-  let status, resBody;
-  await apiPost(query, values)
-    .then(() => {
-      status = 200;
-      resBody = { message: "User has been added." };
-    })
-    .catch((err) => {
-      status = 400;
-      resBody = err;
-    });
+export async function GET(req: Request) {
+  const result = await db.select().from(users);
 
-  return Response.json(resBody, { status });
+  return Response.json(result);
 }

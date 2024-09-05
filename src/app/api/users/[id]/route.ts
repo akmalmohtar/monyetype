@@ -1,29 +1,11 @@
-import { apiGet } from "../../database";
+import { db } from "@/db/database";
+import { users } from "@/db/schema/user-schema";
+import { eq } from "drizzle-orm";
 
-export async function GET(req: Request) {
-  const query = `
-    SELECT * FROM users
-  `;
+export async function GET(_: Request, { params }: { params: { id: string } }) {
+  const { id } = params;
 
-  let status, resBody;
-  try {
-    await apiGet(query)
-      .then((res) => {
-        status = 200;
-        resBody = res;
-      })
-      .catch((err) => {
-        status = 400;
-        resBody = { error: err };
-      });
+  const result = await db.select().from(users).where(eq(users.id, +id));
 
-    return Response.json(resBody, { status });
-  } catch (error: unknown) {
-    console.error(error);
-
-    return Response.json({
-      error,
-      status: 400,
-    });
-  }
+  return Response.json(result);
 }

@@ -46,7 +46,7 @@ const SignupSchema = z.object({
 
 export async function signup(state: SignupFormState, formData: FormData) {
   if (formData.get("password") !== formData.get("confirmPassword")) {
-    return { password: ["Passwords do not match!"] };
+    return { errors: { password: ["Passwords do not match!"] } };
   }
 
   let payload = {
@@ -61,7 +61,8 @@ export async function signup(state: SignupFormState, formData: FormData) {
     return { errors: validateFields.error.flatten().fieldErrors };
   }
 
-  const hashedPassword = bcrypt.hash(payload.password, 10);
+  const hashedPassword = await bcrypt.hash(payload.password, 10);
+
   payload = { ...payload, password: hashedPassword };
 
   try {
@@ -69,7 +70,9 @@ export async function signup(state: SignupFormState, formData: FormData) {
       method: "POST",
       body: JSON.stringify(payload),
     });
+
+    return { message: "Signup success!" };
   } catch (error) {
-    return { message: "Fail to sign up!" };
+    return { message: "Signup failed!" };
   }
 }

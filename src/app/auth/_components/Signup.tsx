@@ -48,7 +48,7 @@ export default function Signup() {
           <Input id="confirmPassword" name="confirmPassword" type="password" />
         </div>
         <Button type="submit" variant={"akmalmohtar"} disabled={pending}>
-          Login
+          Signup
         </Button>
       </Card>
     </motion.form>
