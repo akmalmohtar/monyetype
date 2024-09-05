@@ -1,5 +1,4 @@
 import { z } from "zod";
-const bcrypt = require("bcryptjs");
 
 type LoginFormState =
   | {
@@ -7,7 +6,10 @@ type LoginFormState =
         email?: string[];
         password?: string[];
       };
-      message?: string;
+      result?: {
+        success?: boolean;
+        message?: string;
+      };
     }
   | undefined;
 
@@ -16,15 +18,39 @@ const LoginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
-export async function login(state: LoginFormState, formData: FormData) {
-  const validateFields = LoginSchema.safeParse({
-    email: formData.get("email"),
-    password: formData.get("password"),
+export async function login(_: LoginFormState, formData: FormData) {
+  let payload: { [key: string]: string } = {};
+  formData.forEach((v, k) => {
+    payload[k.toString()] = v.toString();
   });
+
+  const validateFields = LoginSchema.safeParse(payload);
 
   if (!validateFields.success) {
     return { errors: validateFields.error.flatten().fieldErrors };
   }
+
+  const result = await fetch("/api/auth/login", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+  if (!result.ok) {
+    const { message } = await result.json();
+    return {
+      result: {
+        success: false,
+        message,
+      },
+    };
+  }
+
+  return {
+    result: {
+      success: true,
+      message: "Login success!",
+    },
+  };
 }
 
 type SignupFormState =
@@ -33,27 +59,35 @@ type SignupFormState =
         username?: string[];
         email?: string[];
         password?: string[];
+        confirmPassword?: string[];
       };
-      message?: string;
+      result?: {
+        success?: boolean;
+        message?: string;
+      };
     }
   | undefined;
 
-const SignupSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters long"),
-  email: z.string().email("Invalid email"),
-  password: z.string().min(6, "Password must be at least 6 characters long "),
-});
+const SignupSchema = z
+  .object({
+    username: z.string().min(3, "Username must be at least 3 characters long"),
+    email: z.string().email("Invalid email"),
+    password: z.string().min(6, "Password must be at least 6 characters long "),
+    confirmPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters long "),
+  })
+  .refine(({ password, confirmPassword }) => password === confirmPassword, {
+    message: "Passwords do not match!",
+    path: ["password", "confirmPassword"],
+  });
 
-export async function signup(state: SignupFormState, formData: FormData) {
-  if (formData.get("password") !== formData.get("confirmPassword")) {
-    return { password: ["Passwords do not match!"] };
-  }
-
-  let payload = {
-    username: formData.get("username")?.toString(),
-    email: formData.get("email")?.toString(),
-    password: formData.get("password")?.toString(),
-  };
+export async function signup(_: SignupFormState, formData: FormData) {
+  // Convert the form data into object
+  let payload: { [key: string]: string } = {};
+  formData.forEach((v, k) => {
+    payload[k.toString()] = v.toString();
+  });
 
   const validateFields = SignupSchema.safeParse(payload);
 
@@ -61,15 +95,25 @@ export async function signup(state: SignupFormState, formData: FormData) {
     return { errors: validateFields.error.flatten().fieldErrors };
   }
 
-  const hashedPassword = bcrypt.hash(payload.password, 10);
-  payload = { ...payload, password: hashedPassword };
+  const result = await fetch("/api/auth/signup", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 
-  try {
-    await fetch("/api/users/", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-  } catch (error) {
-    return { message: "Fail to sign up!" };
+  if (!result.ok) {
+    const { message } = await result.json();
+    return {
+      result: {
+        success: false,
+        message,
+      },
+    };
   }
+
+  return {
+    result: {
+      success: true,
+      message: "Signup success!",
+    },
+  };
 }

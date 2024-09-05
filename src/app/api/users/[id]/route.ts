@@ -1,29 +1,36 @@
-import { apiGet } from "../../database";
+import { db } from "@/db/database";
+import { TUser, users } from "@/db/schema/user-schema";
+import { eq } from "drizzle-orm";
 
-export async function GET(req: Request) {
-  const query = `
-    SELECT * FROM users
-  `;
+type Context = {
+  params: { id: string };
+};
 
-  let status, resBody;
-  try {
-    await apiGet(query)
-      .then((res) => {
-        status = 200;
-        resBody = res;
-      })
-      .catch((err) => {
-        status = 400;
-        resBody = { error: err };
-      });
+export async function GET(_: Request, context: Context) {
+  const id = context.params.id;
 
-    return Response.json(resBody, { status });
-  } catch (error: unknown) {
-    console.error(error);
+  const result = await db.select().from(users).where(eq(users.id, +id));
 
-    return Response.json({
-      error,
-      status: 400,
-    });
-  }
+  return Response.json(result);
+}
+
+export async function DELETE(_: Request, context: Context) {
+  const id = context.params.id;
+
+  const result = await db.delete(users).where(eq(users.id, +id));
+
+  return Response.json(result);
+}
+
+export async function PUT(req: Request, context: Context) {
+  const id = context.params.id;
+
+  const body: TUser = await req.json();
+
+  const result = await db
+    .update(users)
+    .set({ ...body })
+    .where(eq(users.id, +id));
+
+  return Response.json(result);
 }
