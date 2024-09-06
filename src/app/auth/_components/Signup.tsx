@@ -27,7 +27,7 @@ export default function Signup() {
         <div>
           <Label htmlFor="username">Username</Label>
           <Input id="username" name="username" type="username" />
-          {state?.errors?.email && (
+          {state?.errors?.username && (
             <p className="text-sm text-red-500">{state.errors.username}</p>
           )}
         </div>
