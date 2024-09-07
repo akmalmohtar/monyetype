@@ -1,6 +1,9 @@
 name: Docker Build, Tag and Push
 run-name: builds docker image, tag it and push to dockerhub
-on: [push]
+on:
+  push:
+    branches:
+      - master
 jobs:
   build-tag-push:
     runs-on: ubuntu-latest
