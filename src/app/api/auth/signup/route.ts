@@ -12,6 +12,7 @@ export async function POST(req: Request) {
       .insert(users)
       .values({ username, email, password: hashedPassword });
 
+
     return Response.json(result, { status: 201 });
   } catch (error) {
     return Response.json({ message: "Email already exists." }, { status: 409 });

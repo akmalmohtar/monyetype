@@ -90,13 +90,10 @@ export async function signup(_: SignupFormState, formData: FormData) {
   });
 
   const validateFields = SignupSchema.safeParse(payload);
-  console.log("🚀 ~ signup ~ validateFields:", validateFields);
-  console.log(">>>>>>", validateFields?.error?.flatten().fieldErrors);
   if (!validateFields.success) {
     return { errors: validateFields.error.flatten().fieldErrors };
   }
 
-  console.log("APA CERITA");
   const result = await fetch("/api/auth/signup", {
     method: "POST",
     body: JSON.stringify(payload),

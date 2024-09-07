@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build:dev": "docker build -t monyetype:0.0.1 -f Dockerfile.dev",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
