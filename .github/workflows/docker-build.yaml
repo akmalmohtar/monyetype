@@ -11,13 +11,13 @@ jobs:
       - name: Clone repo to VM
         uses: actions/checkout@v4
       - name: Build the docker image
-        run: docker build . --file Dockerfile.dev --tag monyetype:latest
+        run: docker build . --file Dockerfile.dev --tag monyetype:dev-latest
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
       - name: Tag the docker image
-        run: docker tag monyetype:latest arimotearipo/monyetype:latest
+        run: docker tag monyetype:dev-latest arimotearipo/monyetype:dev-latest
       - name: Push the tagged docker image to repository
-        run: docker push arimotearipo/monyetype:latest
+        run: docker push arimotearipo/monyetype:dev-latest
