@@ -1,5 +1,8 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Client } from "pg";
 
-const sqlite = new Database("sqlite.db");
-export const db = drizzle(sqlite);
+const client = new Client(process.env.DB_URI);
+
+await client.connect();
+
+export const db = drizzle(client);

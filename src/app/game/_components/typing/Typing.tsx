@@ -24,7 +24,6 @@ const TypingTest: React.FC = () => {
   const [totalTypedChars, setTotalTypedChars] = useState<number>(0);
   const [errors, setErrors] = useState<number>(0);
   const [timer, setTimer] = useState<number>(TIMER);
-  console.log("🚀 ~ timer:", timer);
   const [started, setStarted] = useState<boolean>(false);
   const [testEnded, setTestEnded] = useState<boolean>(false);
   const [wpmHistory, setWpmHistory] = useState<WPMEntry[]>([]);

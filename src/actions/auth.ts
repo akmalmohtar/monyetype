@@ -90,7 +90,6 @@ export async function signup(_: SignupFormState, formData: FormData) {
   });
 
   const validateFields = SignupSchema.safeParse(payload);
-
   if (!validateFields.success) {
     return { errors: validateFields.error.flatten().fieldErrors };
   }

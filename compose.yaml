@@ -1,0 +1,24 @@
+services:
+  monyetype:
+    container_name: monyetype
+    build: .
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+      - /app/node_modules
+  postgres:
+    container_name: postgresdb
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: example # don't forget to put postgres password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
