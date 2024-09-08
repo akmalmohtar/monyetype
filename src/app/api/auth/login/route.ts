@@ -1,5 +1,6 @@
 import { db } from "@/db/database";
 import { users } from "@/db/schema/user-schema";
+import { createSession } from "@/lib/session";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 
@@ -22,6 +23,8 @@ export async function POST(req: Request) {
   if (!result) {
     return Response.json({ message: "Wrong password" }, { status: 403 });
   }
+
+  await createSession(email);
 
   return Response.json(result, { status: 200 });
 }

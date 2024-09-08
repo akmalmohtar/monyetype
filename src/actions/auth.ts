@@ -1,3 +1,4 @@
+import { deleteSession } from "@/lib/session";
 import { z } from "zod";
 
 type LoginFormState =
@@ -115,4 +116,8 @@ export async function signup(_: SignupFormState, formData: FormData) {
       message: "Signup success!",
     },
   };
+}
+
+export async function logout() {
+  deleteSession();
 }
