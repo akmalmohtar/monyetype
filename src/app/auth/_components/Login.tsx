@@ -1,76 +1,84 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { login } from "@/actions/auth/login.action";
-import { useFormState, useFormStatus } from "react-dom";
+import { useForm } from "@tanstack/react-form";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { cn } from "@/lib/utils";
 
-export default function Login() {
-  const [state, action] = useFormState(login, undefined);
-  const formRef = useRef<HTMLFormElement | null>(null);
+type LoginInfo = {
+  email: string;
+  password: string;
+};
 
+export default function Login() {
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const { Field, Subscribe, handleSubmit } = useForm<LoginInfo>({
+    onSubmit: async ({ value }) => {
+      const res = await login(value);
+      if (!res.success) {
+        setSubmissionError(res.message);
+      }
+    },
+  });
   return (
-    <motion.form
-      ref={formRef}
-      action={action}
+    <motion.div
       initial={{ y: 0, opacity: 0 }}
       animate={{ y: 80, opacity: 1 }}
       transition={{ ease: "easeIn" }}
     >
       <Card className="w-[400px] space-y-4">
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" />
-          {state?.errors?.email && (
-            <p className="text-sm text-red-500">{state.errors.email}</p>
+        <Field name="email">
+          {(field) => (
+            <div>
+              {" "}
+              <Label htmlFor={field.name}>Email</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type={field.name}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </div>
           )}
-        </div>
-        <div>
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" />
-          {state?.errors?.password && (
-            <p className="text-sm text-red-500">{state.errors.password}</p>
+        </Field>
+        <Field name="password">
+          {(field) => (
+            <div>
+              <Label htmlFor={field.name}>Password</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type={field.name}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </div>
           )}
-        </div>
-        <div className="flex justify-between">
-          <SpinnerOrButton formRef={formRef} />
-          {state?.result && (
-            <p
-              className={cn("text-red-500", {
-                "text-green-500": state?.result.success,
-              })}
-            >
-              {state?.result?.message}
-            </p>
+        </Field>
+
+        <Subscribe selector={(state) => [state.isSubmitting, state.canSubmit]}>
+          {([isSubmitting, canSubmit]) => (
+            <div className="flex justify-between">
+              <Button
+                disabled={!canSubmit}
+                onClick={handleSubmit}
+                variant={"akmalmohtar"}
+                className="w-[80px]"
+              >
+                {isSubmitting ? <LoadingSpinner /> : "Login"}
+              </Button>
+              {!!submissionError && (
+                <p className={cn("text-red-500")}>{submissionError}</p>
+              )}
+            </div>
           )}
-        </div>
+        </Subscribe>
       </Card>
-    </motion.form>
-  );
-}
-
-function SpinnerOrButton({
-  formRef,
-}: {
-  formRef: {
-    current: HTMLFormElement | null;
-  };
-}) {
-  const { pending } = useFormStatus();
-
-  if (!pending) {
-    formRef?.current?.reset();
-  }
-
-  return (
-    <Button type="submit" variant={"akmalmohtar"} className="w-[80px]">
-      {pending ? <LoadingSpinner /> : "Login"}
-    </Button>
+    </motion.div>
   );
 }
