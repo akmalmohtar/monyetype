@@ -8,11 +8,11 @@ import React, {
   ReactNode,
 } from "react";
 
-interface AuthContextType {
+type AuthContextType = {
   isAuthenticated: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
-}
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -23,7 +23,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Implement your authentication check logic here
       const response = await fetch("/api/auth/check-auth");
       const data = await response.json();
       setIsAuthenticated(data.isAuthenticated);
@@ -33,14 +32,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const login = async () => {
-    // Implement your login logic here
-    await fetch("/api/login", { method: "POST" });
+    await fetch("/api/auth/login", { method: "POST" });
     setIsAuthenticated(true);
   };
 
   const logout = async () => {
-    // Implement your logout logic here
-    await fetch("/api/logout", { method: "POST" });
+    await fetch("/api/authlogout", { method: "POST" });
     setIsAuthenticated(false);
   };
 
