@@ -23,6 +23,8 @@ export default function Login() {
       const res = await login(value);
       if (!res.success) {
         setSubmissionError(res.message);
+      } else {
+        setSubmissionError(null);
       }
     },
   });

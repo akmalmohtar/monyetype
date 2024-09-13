@@ -1,94 +1,118 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { signup } from "@/actions/auth/signup.action";
-import { useFormState, useFormStatus } from "react-dom";
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useForm } from "@tanstack/react-form";
+
+type SignupInfo = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 export default function Signup() {
-  const [state, action] = useFormState(signup, undefined);
-  const formRef = useRef<HTMLFormElement | null>(null);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const { Field, Subscribe, handleSubmit } = useForm<SignupInfo>({
+    onSubmit: async ({ value }) => {
+      const res = await signup(value);
+
+      if (!res.success) {
+        setSubmissionError(res.message);
+      } else {
+        setSubmissionError(null);
+      }
+    },
+  });
 
   return (
-    <motion.form
-      ref={formRef}
-      action={action}
+    <motion.div
       initial={{ y: 0, opacity: 0 }}
       animate={{ y: 80, opacity: 1 }}
       transition={{ ease: "easeIn" }}
     >
       <Card className="w-[400px] space-y-4">
-        <div>
-          <Label htmlFor="username">Username</Label>
-          <Input id="username" name="username" type="username" />
-          {state?.errors?.username && (
-            <p className="text-sm text-red-500">{state.errors.username}</p>
+        <Field name="username">
+          {(field) => (
+            <div>
+              <Label htmlFor={field.name}>Username</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type="text"
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </div>
           )}
-        </div>
+        </Field>
 
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" />
-          {state?.errors?.email && (
-            <p className="text-sm text-red-500">{state.errors.email}</p>
+        <Field name="email">
+          {(field) => (
+            <div>
+              <Label htmlFor={field.name}>Email</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type="text"
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </div>
           )}
-        </div>
-        <div>
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" />
-          {state?.errors?.password && (
-            <p className="text-sm text-red-500">{state.errors.password}</p>
+        </Field>
+
+        <Field name="password">
+          {(field) => (
+            <div>
+              <Label htmlFor={field.name}>Password</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type="password"
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </div>
           )}
-        </div>
-        <div>
-          <Label htmlFor="confirmPassword">Confirm password</Label>
-          <Input id="confirmPassword" name="confirmPassword" type="password" />
-          {state?.errors?.confirmPassword && (
-            <p className="text-sm text-red-500">
-              {state.errors.confirmPassword}
-            </p>
+        </Field>
+
+        <Field name="confirmPassword">
+          {(field) => (
+            <div>
+              <Label htmlFor={field.name}>Confirm password</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type="password"
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </div>
           )}
-        </div>
-        <div className="flex justify-between">
-          {/* For some reason, the pending value from useFormStatus won't have an effect if set it within the same component */}
-          <SpinnerOrButton formRef={formRef} />
-          {state?.result && (
-            <p
-              className={cn("text-red-500", {
-                "text-green-500": state?.result.success,
-              })}
-            >
-              {state?.result?.message}
-            </p>
+        </Field>
+
+        <Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+          {([canSubmit, isSubmitting]) => (
+            <div className="flex justify-between">
+              <Button
+                disabled={!canSubmit}
+                onClick={handleSubmit}
+                variant={"akmalmohtar"}
+                className="w-[80px]"
+              >
+                {isSubmitting ? <LoadingSpinner /> : "Signup"}
+              </Button>
+              {!!submissionError && (
+                <p className={cn("text-red-500")}>{submissionError}</p>
+              )}
+            </div>
           )}
-        </div>
+        </Subscribe>
       </Card>
-    </motion.form>
-  );
-}
-
-function SpinnerOrButton({
-  formRef,
-}: {
-  formRef: {
-    current: HTMLFormElement | null;
-  };
-}) {
-  const { pending } = useFormStatus();
-
-  if (!pending) {
-    formRef?.current?.reset();
-  }
-
-  return (
-    <Button type="submit" variant={"akmalmohtar"} className="w-[80px]">
-      {pending ? <LoadingSpinner /> : "Signup"}
-    </Button>
+    </motion.div>
   );
 }
