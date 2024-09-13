@@ -1,24 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { signup } from "@/actions/auth/signup.action";
-import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-
-type SignupInfo = {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+import { SignupInfo, SignupSchema } from "@/types";
 
 export default function Signup() {
   const {
@@ -32,6 +24,7 @@ export default function Signup() {
       password: "",
       confirmPassword: "",
     },
+    resolver: zodResolver(SignupSchema),
   });
 
   return (

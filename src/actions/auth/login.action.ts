@@ -1,4 +1,6 @@
-export async function login(formData: { email: string; password: string }) {
+import { LoginInfo } from "@/types";
+
+export async function login(formData: LoginInfo) {
   const res = await fetch("/api/auth/login", {
     method: "POST",
     headers: {

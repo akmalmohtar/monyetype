@@ -3,12 +3,7 @@ import { users } from "@/db/schema/user-schema";
 import { createSession } from "@/lib/session";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
-
-const LoginSchema = z.object({
-  email: z.string().min(1).email("Invalid email"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
-});
+import { LoginSchema } from "@/types";
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();

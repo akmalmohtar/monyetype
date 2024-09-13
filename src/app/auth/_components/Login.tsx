@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,12 +10,7 @@ import { login } from "@/actions/auth/login.action";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { cn } from "@/lib/utils";
-
-type LoginInfo = {
-  email: string;
-  password: string;
-};
+import { LoginInfo, LoginSchema } from "@/types";
 
 export default function Login() {
   const {
@@ -27,6 +22,7 @@ export default function Login() {
       email: "",
       password: "",
     },
+    resolver: zodResolver(LoginSchema),
   });
 
   return (

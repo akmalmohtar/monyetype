@@ -1,9 +1,6 @@
-export async function signup(formData: {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}) {
+import { SignupInfo } from "@/types";
+
+export async function signup(formData: SignupInfo) {
   const res = await fetch("/api/auth/signup", {
     method: "POST",
     headers: {
