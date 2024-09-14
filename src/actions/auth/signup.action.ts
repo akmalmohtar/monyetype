@@ -1,10 +1,11 @@
-export async function signup(formData: {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}) {
-  const res = await fetch("/api/auth/signup", {
+"use server";
+
+import { ServerActionResponse, SignupInfo } from "@/types";
+
+export async function signupAction(
+  formData: SignupInfo,
+): Promise<ServerActionResponse> {
+  const res = await fetch(process.env.BASE_URL + "/api/auth/signup", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -12,6 +13,5 @@ export async function signup(formData: {
     body: JSON.stringify(formData),
   });
 
-  console.log("res", res);
   return await res.json();
 }

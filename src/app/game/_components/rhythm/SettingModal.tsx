@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { TRhythmSettings } from "@/types";
 import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
-import { useForm } from "@tanstack/react-form";
+import { useForm, Controller } from "react-hook-form";
 
 export default function SettingModal({ onOpen }: { onOpen: () => void }) {
   const [open, setOpen] = useState(false);
@@ -25,15 +25,14 @@ export default function SettingModal({ onOpen }: { onOpen: () => void }) {
     saveSettings: state.saveSettings,
   }));
 
-  const handleSubmit = ({ value }: { value: TRhythmSettings }) => {
+  const { handleSubmit, control } = useForm<TRhythmSettings>({
+    defaultValues: rhythmSettings,
+  });
+
+  const submitSettings = (value: TRhythmSettings) => {
     saveSettings(value);
     setOpen(false);
   };
-
-  const tanForm = useForm<TRhythmSettings>({
-    defaultValues: rhythmSettings,
-    onSubmit: handleSubmit,
-  });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -49,130 +48,134 @@ export default function SettingModal({ onOpen }: { onOpen: () => void }) {
             Configure your gameplay experience
           </DialogDescription>
         </DialogHeader>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            tanForm.handleSubmit();
-          }}
-          className="space-y-4"
-        >
-          <tanForm.Field name="gameDuration">
-            {(field) => (
-              <div className="grid grid-cols-2 space-x-4">
-                <Label htmlFor={field.name}>
-                  Game duration in milliseconds
-                </Label>
-                <Input
-                  id={field.name}
-                  type="number"
-                  min={0}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(+e.target.value)}
-                />
-              </div>
-            )}
-          </tanForm.Field>
 
-          <tanForm.Field name="letterDuration">
-            {(field) => (
-              <div className="grid grid-cols-2 space-x-4">
-                <Label htmlFor={field.name}>
-                  Duration per letter in milliseconds
-                </Label>
-                <Input
-                  id={field.name}
-                  type="number"
-                  min={0}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(+e.target.value)}
-                />
-              </div>
-            )}
-          </tanForm.Field>
+        <Controller
+          name="gameDuration"
+          control={control}
+          render={({ field }) => (
+            <div className="grid grid-cols-2 space-x-4">
+              <Label htmlFor={field.name}>Game duration in milliseconds</Label>
+              <Input
+                {...field}
+                id={field.name}
+                type="number"
+                min={0}
+                value={field.value}
+              />
+            </div>
+          )}
+        />
 
-          <tanForm.Field name="enableNextLetter">
-            {(field) => (
-              <div className="flex space-x-2">
-                <Checkbox
-                  id={field.name}
-                  checked={field.state.value}
-                  onCheckedChange={(e) => field.handleChange(e)}
-                />
-                <Label htmlFor={field.name}>Enable next letter preview</Label>
-              </div>
-            )}
-          </tanForm.Field>
+        <Controller
+          name="letterDuration"
+          control={control}
+          render={({ field }) => (
+            <div className="grid grid-cols-2 space-x-4">
+              <Label htmlFor={field.name}>
+                Duration per letter in milliseconds
+              </Label>
+              <Input
+                {...field}
+                id={field.name}
+                type="number"
+                min={0}
+                value={field.value}
+              />
+            </div>
+          )}
+        />
 
-          <tanForm.Field name="enableNumbers">
-            {(field) => (
-              <div className="flex space-x-2">
-                <Checkbox
-                  id={field.name}
-                  checked={field.state.value}
-                  onCheckedChange={(e) => field.handleChange(e)}
-                />
-                <Label htmlFor={field.name}>Enable numbers</Label>
-              </div>
-            )}
-          </tanForm.Field>
+        <Controller
+          name="enableNextLetter"
+          control={control}
+          render={({ field }) => (
+            <div className="flex space-x-2">
+              <Checkbox
+                id={field.name}
+                checked={field.value}
+                onCheckedChange={(e) => field.onChange(e)}
+              />
+              <Label htmlFor={field.name}>Enable next letter preview</Label>
+            </div>
+          )}
+        />
 
-          <tanForm.Field name="enableSpecialCharacters">
-            {(field) => (
-              <div className="flex space-x-2">
-                <Checkbox
-                  id={field.name}
-                  checked={field.state.value}
-                  onCheckedChange={(e) => field.handleChange(e)}
-                />
-                <Label htmlFor={field.name}>Enable special characters</Label>
-              </div>
-            )}
-          </tanForm.Field>
+        <Controller
+          name="enableNumbers"
+          control={control}
+          render={({ field }) => (
+            <div className="flex space-x-2">
+              <Checkbox
+                id={field.name}
+                checked={field.value}
+                onCheckedChange={(e) => field.onChange(e)}
+              />
+              <Label htmlFor={field.name}>Enable numbers</Label>
+            </div>
+          )}
+        />
 
-          <tanForm.Field name="enableUppercaseLetters">
-            {(field) => (
-              <div className="flex space-x-2">
-                <Checkbox
-                  id={field.name}
-                  checked={field.state.value}
-                  onCheckedChange={(e) => field.handleChange(e)}
-                />
-                <Label htmlFor={field.name}>Enable uppercase letters</Label>
-              </div>
-            )}
-          </tanForm.Field>
+        <Controller
+          name="enableSpecialCharacters"
+          control={control}
+          render={({ field }) => (
+            <div className="flex space-x-2">
+              <Checkbox
+                id={field.name}
+                checked={field.value}
+                onCheckedChange={(e) => field.onChange(e)}
+              />
+              <Label htmlFor={field.name}>Enable special characters</Label>
+            </div>
+          )}
+        />
 
-          <tanForm.Field name="enableUppercaseSpecialCharacters">
-            {(field) => (
-              <div className="flex space-x-2">
-                <Checkbox
-                  id={field.name}
-                  checked={field.state.value}
-                  onCheckedChange={(e) => field.handleChange(e)}
-                />
-                <Label htmlFor={field.name}>
-                  Enable uppercase special characters (special characters that
-                  requires you to hold shift)
-                </Label>
-              </div>
-            )}
-          </tanForm.Field>
-          <DialogFooter className="sm:justify-start">
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">
-                Close
-              </Button>
-            </DialogClose>
-            <tanForm.Subscribe>
-              {() => (
-                <Button variant={"akmalmohtar"} type="submit">
-                  Save
-                </Button>
-              )}
-            </tanForm.Subscribe>
-          </DialogFooter>
-        </form>
+        <Controller
+          name="enableUppercaseLetters"
+          control={control}
+          render={({ field }) => (
+            <div className="flex space-x-2">
+              <Checkbox
+                id={field.name}
+                checked={field.value}
+                onCheckedChange={(e) => field.onChange(e)}
+              />
+              <Label htmlFor={field.name}>Enable uppercase letters</Label>
+            </div>
+          )}
+        />
+
+        <Controller
+          name="enableUppercaseSpecialCharacters"
+          control={control}
+          render={({ field }) => (
+            <div className="flex space-x-2">
+              <Checkbox
+                id={field.name}
+                checked={field.value}
+                onCheckedChange={(e) => field.onChange(e)}
+              />
+              <Label htmlFor={field.name}>
+                Enable uppercase special characters (special characters that
+                requires you to hold shift)
+              </Label>
+            </div>
+          )}
+        />
+
+        <DialogFooter className="sm:justify-start">
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Close
+            </Button>
+          </DialogClose>
+          <Button
+            variant={"akmalmohtar"}
+            onClick={handleSubmit(submitSettings)}
+          >
+            Save
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

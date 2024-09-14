@@ -6,28 +6,33 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { login } from "@/actions/auth/login.action";
-import { useForm } from "@tanstack/react-form";
+import { loginAction } from "@/actions/auth/login.action";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { LoginInfo, LoginSchema, ServerActionResponse } from "@/types";
 import { cn } from "@/lib/utils";
 
-type LoginInfo = {
-  email: string;
-  password: string;
-};
-
 export default function Login() {
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const { Field, Subscribe, handleSubmit } = useForm<LoginInfo>({
-    onSubmit: async ({ value }) => {
-      const res = await login(value);
-      if (!res.success) {
-        setSubmissionError(res.message);
-      } else {
-        setSubmissionError(null);
-      }
+  const [submissionStatus, setSubmissionStatus] =
+    useState<ServerActionResponse | null>(null);
+  const {
+    handleSubmit,
+    control,
+    formState: { isValid, isSubmitting },
+  } = useForm<LoginInfo>({
+    defaultValues: {
+      email: "",
+      password: "",
     },
+    resolver: zodResolver(LoginSchema),
   });
+
+  const handleLogin = async (data: LoginInfo) => {
+    const res = await loginAction(data);
+    setSubmissionStatus(res);
+  };
+
   return (
     <motion.div
       initial={{ y: 0, opacity: 0 }}
@@ -35,51 +40,58 @@ export default function Login() {
       transition={{ ease: "easeIn" }}
     >
       <Card className="w-[400px] space-y-4">
-        <Field name="email">
-          {(field) => (
+        <Controller
+          name="email"
+          control={control}
+          render={({ field }) => (
             <div>
               {" "}
               <Label htmlFor={field.name}>Email</Label>
               <Input
+                {...field}
                 id={field.name}
                 name={field.name}
                 type={field.name}
-                onChange={(e) => field.handleChange(e.target.value)}
               />
             </div>
           )}
-        </Field>
-        <Field name="password">
-          {(field) => (
+        />
+
+        <Controller
+          name="password"
+          control={control}
+          render={({ field }) => (
             <div>
               <Label htmlFor={field.name}>Password</Label>
               <Input
+                {...field}
                 id={field.name}
                 name={field.name}
                 type={field.name}
-                onChange={(e) => field.handleChange(e.target.value)}
               />
             </div>
           )}
-        </Field>
+        />
 
-        <Subscribe selector={(state) => [state.isSubmitting, state.canSubmit]}>
-          {([isSubmitting, canSubmit]) => (
-            <div className="flex justify-between">
-              <Button
-                disabled={!canSubmit}
-                onClick={handleSubmit}
-                variant={"akmalmohtar"}
-                className="w-[80px]"
-              >
-                {isSubmitting ? <LoadingSpinner /> : "Login"}
-              </Button>
-              {!!submissionError && (
-                <p className={cn("text-red-500")}>{submissionError}</p>
-              )}
-            </div>
+        <div className="flex flex-row justify-between items-center">
+          <Button
+            disabled={!isValid}
+            onClick={handleSubmit(handleLogin)}
+            variant={"akmalmohtar"}
+            className="w-[80px]"
+          >
+            {isSubmitting ? <LoadingSpinner /> : "Login"}
+          </Button>
+          {submissionStatus && (
+            <p
+              className={cn("text-green-500", {
+                "text-red-500": !submissionStatus.success,
+              })}
+            >
+              {submissionStatus.message}
+            </p>
           )}
-        </Subscribe>
+        </div>
       </Card>
     </motion.div>
   );

@@ -6,31 +6,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { signup } from "@/actions/auth/signup.action";
-import { cn } from "@/lib/utils";
+import { signupAction } from "@/actions/auth/signup.action";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useForm } from "@tanstack/react-form";
-
-type SignupInfo = {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ServerActionResponse, SignupInfo, SignupSchema } from "@/types";
+import { cn } from "@/lib/utils";
 
 export default function Signup() {
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const { Field, Subscribe, handleSubmit } = useForm<SignupInfo>({
-    onSubmit: async ({ value }) => {
-      const res = await signup(value);
-
-      if (!res.success) {
-        setSubmissionError(res.message);
-      } else {
-        setSubmissionError(null);
-      }
+  const [submissionStatus, setSubmissionStatus] =
+    useState<ServerActionResponse | null>(null);
+  const {
+    handleSubmit,
+    control,
+    formState: { isValid, isSubmitting },
+  } = useForm<SignupInfo>({
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
+    resolver: zodResolver(SignupSchema),
   });
+
+  const handleSignup = async (data: SignupInfo) => {
+    const res = await signupAction(data);
+    setSubmissionStatus(res);
+  };
 
   return (
     <motion.div
@@ -39,79 +42,79 @@ export default function Signup() {
       transition={{ ease: "easeIn" }}
     >
       <Card className="w-[400px] space-y-4">
-        <Field name="username">
-          {(field) => (
+        <Controller
+          name="username"
+          control={control}
+          render={({ field }) => (
             <div>
               <Label htmlFor={field.name}>Username</Label>
-              <Input
-                id={field.name}
-                name={field.name}
-                type="text"
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
+              <Input {...field} id={field.name} name={field.name} type="text" />
             </div>
           )}
-        </Field>
+        />
 
-        <Field name="email">
-          {(field) => (
+        <Controller
+          name="email"
+          control={control}
+          render={({ field }) => (
             <div>
               <Label htmlFor={field.name}>Email</Label>
-              <Input
-                id={field.name}
-                name={field.name}
-                type="text"
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
+              <Input {...field} id={field.name} name={field.name} type="text" />
             </div>
           )}
-        </Field>
+        />
 
-        <Field name="password">
-          {(field) => (
+        <Controller
+          name="password"
+          control={control}
+          render={({ field }) => (
             <div>
               <Label htmlFor={field.name}>Password</Label>
               <Input
+                {...field}
                 id={field.name}
                 name={field.name}
                 type="password"
-                onChange={(e) => field.handleChange(e.target.value)}
               />
             </div>
           )}
-        </Field>
+        />
 
-        <Field name="confirmPassword">
-          {(field) => (
+        <Controller
+          name="confirmPassword"
+          control={control}
+          render={({ field }) => (
             <div>
               <Label htmlFor={field.name}>Confirm password</Label>
               <Input
+                {...field}
                 id={field.name}
                 name={field.name}
                 type="password"
-                onChange={(e) => field.handleChange(e.target.value)}
               />
             </div>
           )}
-        </Field>
+        />
 
-        <Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
-          {([canSubmit, isSubmitting]) => (
-            <div className="flex justify-between">
-              <Button
-                disabled={!canSubmit}
-                onClick={handleSubmit}
-                variant={"akmalmohtar"}
-                className="w-[80px]"
-              >
-                {isSubmitting ? <LoadingSpinner /> : "Signup"}
-              </Button>
-              {!!submissionError && (
-                <p className={cn("text-red-500")}>{submissionError}</p>
-              )}
-            </div>
+        <div className="flex flex-row justify-between items-center">
+          <Button
+            disabled={!isValid}
+            onClick={handleSubmit(handleSignup)}
+            variant={"akmalmohtar"}
+            className="w-[80px]"
+          >
+            {isSubmitting ? <LoadingSpinner /> : "Signup"}
+          </Button>
+          {submissionStatus && (
+            <p
+              className={cn("text-green-500", {
+                "text-red-500": !submissionStatus.success,
+              })}
+            >
+              {submissionStatus.message}
+            </p>
           )}
-        </Subscribe>
+        </div>
       </Card>
     </motion.div>
   );

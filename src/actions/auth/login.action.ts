@@ -1,5 +1,11 @@
-export async function login(formData: { email: string; password: string }) {
-  const res = await fetch("/api/auth/login", {
+"use server";
+
+import { LoginInfo, ServerActionResponse } from "@/types";
+
+export async function loginAction(
+  formData: LoginInfo,
+): Promise<ServerActionResponse> {
+  const res = await fetch(process.env.BASE_URL + "/api/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
