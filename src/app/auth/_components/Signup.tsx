@@ -1,18 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { signup } from "@/actions/auth/signup.action";
+import { signupAction } from "@/actions/auth/signup.action";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SignupInfo, SignupSchema } from "@/types";
+import { ServerActionResponse, SignupInfo, SignupSchema } from "@/types";
+import { cn } from "@/lib/utils";
 
 export default function Signup() {
+  const [submissionStatus, setSubmissionStatus] =
+    useState<ServerActionResponse | null>(null);
   const {
     handleSubmit,
     control,
@@ -26,6 +29,11 @@ export default function Signup() {
     },
     resolver: zodResolver(SignupSchema),
   });
+
+  const handleSignup = async (data: SignupInfo) => {
+    const res = await signupAction(data);
+    setSubmissionStatus(res);
+  };
 
   return (
     <motion.div
@@ -88,14 +96,25 @@ export default function Signup() {
           )}
         />
 
-        <Button
-          disabled={!isValid}
-          onClick={handleSubmit(signup)}
-          variant={"akmalmohtar"}
-          className="w-[80px]"
-        >
-          {isSubmitting ? <LoadingSpinner /> : "Signup"}
-        </Button>
+        <div className="flex flex-row justify-between items-center">
+          <Button
+            disabled={!isValid}
+            onClick={handleSubmit(handleSignup)}
+            variant={"akmalmohtar"}
+            className="w-[80px]"
+          >
+            {isSubmitting ? <LoadingSpinner /> : "Signup"}
+          </Button>
+          {submissionStatus && (
+            <p
+              className={cn("text-green-500", {
+                "text-red-500": !submissionStatus.success,
+              })}
+            >
+              {submissionStatus.message}
+            </p>
+          )}
+        </div>
       </Card>
     </motion.div>
   );

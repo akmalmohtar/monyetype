@@ -25,6 +25,11 @@ export type LoginInfo = {
   password: string;
 };
 
+export type ServerActionResponse = {
+  success: boolean;
+  message: string;
+};
+
 export const SignupSchema = z
   .object({
     username: z.string().min(3, "Username must be at least 3 characters long"),

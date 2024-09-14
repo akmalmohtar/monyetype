@@ -1,7 +1,11 @@
-import { SignupInfo } from "@/types";
+"use server";
 
-export async function signup(formData: SignupInfo) {
-  const res = await fetch("/api/auth/signup", {
+import { ServerActionResponse, SignupInfo } from "@/types";
+
+export async function signupAction(
+  formData: SignupInfo,
+): Promise<ServerActionResponse> {
+  const res = await fetch(process.env.BASE_URL + "/api/auth/signup", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -9,6 +13,5 @@ export async function signup(formData: SignupInfo) {
     body: JSON.stringify(formData),
   });
 
-  console.log("res", res);
   return await res.json();
 }
