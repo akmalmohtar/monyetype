@@ -25,9 +25,10 @@ export type LoginInfo = {
   password: string;
 };
 
-export type ServerActionResponse = {
+export type AuthServerActionResponse = {
   success: boolean;
   message: string;
+  username?: string;
 };
 
 export const SignupSchema = z

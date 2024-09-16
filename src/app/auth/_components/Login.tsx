@@ -6,16 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { loginAction } from "@/actions/auth/login.action";
+import { loginAction } from "@/actions/auth/loginAction";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { LoginInfo, LoginSchema, ServerActionResponse } from "@/types";
+import { LoginInfo, LoginSchema, AuthServerActionResponse } from "@/types";
 import { cn } from "@/lib/utils";
 
 export default function Login() {
   const [submissionStatus, setSubmissionStatus] =
-    useState<ServerActionResponse | null>(null);
+    useState<AuthServerActionResponse | null>(null);
+
   const {
     handleSubmit,
     control,
@@ -31,6 +32,10 @@ export default function Login() {
   const handleLogin = async (data: LoginInfo) => {
     const res = await loginAction(data);
     setSubmissionStatus(res);
+
+    if (res.success && res.username) {
+      localStorage.setItem("username", res.username);
+    }
   };
 
   return (
@@ -45,7 +50,6 @@ export default function Login() {
           control={control}
           render={({ field }) => (
             <div>
-              {" "}
               <Label htmlFor={field.name}>Email</Label>
               <Input
                 {...field}

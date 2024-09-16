@@ -1,6 +1,5 @@
 import { db } from "@/db/database";
 import { users } from "@/db/schema/user-schema";
-import { createSession } from "@/lib/session";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { LoginSchema } from "@/types";
@@ -18,7 +17,7 @@ export async function POST(req: Request) {
   }
 
   const rows = await db
-    .select({ hashedPassword: users.password })
+    .select({ hashedPassword: users.password, username: users.username })
     .from(users)
     .where(eq(email, users.email));
 
@@ -29,9 +28,9 @@ export async function POST(req: Request) {
     );
   }
 
-  const { hashedPassword } = rows[0];
+  const { hashedPassword, username } = rows[0];
 
-  const result = await bcrypt.compare(password, hashedPassword!);
+  const result = await bcrypt.compare(password, hashedPassword);
 
   if (!result) {
     return Response.json(
@@ -40,10 +39,8 @@ export async function POST(req: Request) {
     );
   }
 
-  await createSession(email);
-
   return Response.json(
-    { success: true, message: "Login success" },
+    { success: true, message: "Login success", username },
     { status: 200 },
   );
 }
