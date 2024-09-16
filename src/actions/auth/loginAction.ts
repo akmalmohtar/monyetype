@@ -1,10 +1,11 @@
 "use server";
 
-import { LoginInfo, ServerActionResponse } from "@/types";
+import { createSession } from "@/lib/session";
+import { LoginInfo, AuthServerActionResponse } from "@/types";
 
 export async function loginAction(
   formData: LoginInfo,
-): Promise<ServerActionResponse> {
+): Promise<AuthServerActionResponse> {
   const res = await fetch(process.env.BASE_URL + "/api/auth/login", {
     method: "POST",
     headers: {
@@ -13,5 +14,9 @@ export async function loginAction(
     body: JSON.stringify(formData),
   });
 
-  return await res.json();
+  const resJson = await res.json();
+
+  await createSession(formData.email);
+
+  return resJson;
 }

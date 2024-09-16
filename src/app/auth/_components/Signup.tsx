@@ -6,16 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { signupAction } from "@/actions/auth/signup.action";
+import { signupAction } from "@/actions/auth/signupAction";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ServerActionResponse, SignupInfo, SignupSchema } from "@/types";
+import { AuthServerActionResponse, SignupInfo, SignupSchema } from "@/types";
 import { cn } from "@/lib/utils";
 
 export default function Signup() {
   const [submissionStatus, setSubmissionStatus] =
-    useState<ServerActionResponse | null>(null);
+    useState<AuthServerActionResponse | null>(null);
   const {
     handleSubmit,
     control,

@@ -1,10 +1,10 @@
 "use server";
 
-import { ServerActionResponse, SignupInfo } from "@/types";
+import { AuthServerActionResponse, SignupInfo } from "@/types";
 
 export async function signupAction(
   formData: SignupInfo,
-): Promise<ServerActionResponse> {
+): Promise<AuthServerActionResponse> {
   const res = await fetch(process.env.BASE_URL + "/api/auth/signup", {
     method: "POST",
     headers: {
