@@ -5,10 +5,14 @@ import { useCallback, useEffect, useState } from "react";
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
-  const _username = localStorage.getItem("username");
+
+  let _username = null;
+  if (typeof window !== "undefined") {
+    _username = window.localStorage.getItem("username");
+  }
 
   const deauthenticate = useCallback(() => {
-    localStorage.removeItem("username");
+    window.localStorage.removeItem("username");
     setIsAuthenticated(false);
     setUsername(null);
   }, []);
