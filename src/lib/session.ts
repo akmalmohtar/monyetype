@@ -1,22 +1,32 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { sign, verify } from "jsonwebtoken";
+import { JWTPayload, SignJWT, jwtVerify } from "jose";
 
 const secretKey = process.env.SESSION_SECRET;
+const key = new TextEncoder().encode(secretKey);
 
-export async function encrypt(email: string) {
+const tokenExp = {
+  access: new Date(Date.now() + 3_600_000), // 1 hour
+  refresh: new Date(Date.now() + 1_209_600_000), // 2 weeks
+};
+
+export async function encrypt(payload: JWTPayload, expiry: Date) {
   try {
-    const accessToken = sign(email, process.env.SESSION_SECRET!);
-    return accessToken;
+    const token = await new SignJWT({ ...payload })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime(expiry)
+      .sign(key);
+    return token;
   } catch (error) {
-    console.log("Error signing user", error);
+    console.log("Error signing token", error);
     return null;
   }
 }
 
 export async function decrypt(token: string) {
   try {
-    const user = verify(token, secretKey!);
+    const user = await jwtVerify(token, key);
     return user;
   } catch (error) {
     console.log("Error verifying token", error);
@@ -24,45 +34,21 @@ export async function decrypt(token: string) {
   }
 }
 
-export async function createSession(email: string) {
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 24 * 60 * 60 * 1000);
-
-  const session = await encrypt(email);
+export async function createSession(data: unknown) {
+  const session = await encrypt({ data }, tokenExp.access);
 
   if (!session) {
     const message = "Fail to create session.";
     console.log(message);
-    throw new Error("message");
+    throw new Error(message);
   }
 
   cookies().set("session", session, {
     httpOnly: true,
     secure: true,
-    expires: expiresAt,
     sameSite: "lax",
     path: "/",
-  });
-}
-
-export async function refreshSession() {
-  const session = cookies().get("session")?.value;
-  if (!session) {
-    return null;
-  }
-
-  const payload = await decrypt(session);
-  if (!payload) {
-    return null;
-  }
-
-  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-  cookies().set("session", session, {
-    httpOnly: true,
-    secure: true,
-    expires: expires,
-    sameSite: "lax",
-    path: "/",
+    expires: tokenExp.access,
   });
 }
 

@@ -33,8 +33,8 @@ export default function Login() {
     const res = await loginAction(data);
     setSubmissionStatus(res);
 
-    if (res.success && res.username) {
-      localStorage.setItem("username", res.username);
+    if (res.success) {
+      localStorage.setItem("username", res.user.username);
     }
   };
 

@@ -3,9 +3,17 @@
 import { createSession } from "@/lib/session";
 import { LoginInfo, AuthServerActionResponse } from "@/types";
 
+type LoginServerActionResponse = AuthServerActionResponse & {
+  user: {
+    username: string;
+    id: string;
+    email: string;
+  };
+};
+
 export async function loginAction(
   formData: LoginInfo,
-): Promise<AuthServerActionResponse> {
+): Promise<LoginServerActionResponse> {
   const res = await fetch(process.env.BASE_URL + "/api/auth/login", {
     method: "POST",
     headers: {
@@ -16,7 +24,7 @@ export async function loginAction(
 
   const resJson = await res.json();
 
-  await createSession(formData.email);
+  await createSession({ id: resJson.user.id });
 
   return resJson;
 }
