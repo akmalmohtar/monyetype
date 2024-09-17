@@ -28,7 +28,6 @@ export type LoginInfo = {
 export type AuthServerActionResponse = {
   success: boolean;
   message: string;
-  username?: string;
 };
 
 export const SignupSchema = z

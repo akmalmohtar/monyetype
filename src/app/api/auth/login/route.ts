@@ -17,7 +17,11 @@ export async function POST(req: Request) {
   }
 
   const rows = await db
-    .select({ hashedPassword: users.password, username: users.username })
+    .select({
+      hashedPassword: users.password,
+      username: users.username,
+      id: users.id,
+    })
     .from(users)
     .where(eq(email, users.email));
 
@@ -28,7 +32,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { hashedPassword, username } = rows[0];
+  const { hashedPassword, username, id } = rows[0];
 
   const result = await bcrypt.compare(password, hashedPassword);
 
@@ -40,7 +44,7 @@ export async function POST(req: Request) {
   }
 
   return Response.json(
-    { success: true, message: "Login success", username },
+    { success: true, message: "Login success", user: { id, email, username } },
     { status: 200 },
   );
 }
