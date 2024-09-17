@@ -25,7 +25,7 @@ export type LoginInfo = {
   password: string;
 };
 
-export type AuthServerActionResponse = {
+export type BaseServerActionResponse = {
   success: boolean;
   message: string;
 };
@@ -47,4 +47,9 @@ export const SignupSchema = z
 export const LoginSchema = z.object({
   email: z.string().min(1).email("Invalid email"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
+});
+
+export const RhythmScoreSchema = z.object({
+  userId: z.number(),
+  score: z.number(),
 });

@@ -1,9 +1,9 @@
 "use server";
 
 import { createSession } from "@/lib/session";
-import { LoginInfo, AuthServerActionResponse } from "@/types";
+import { LoginInfo, BaseServerActionResponse } from "@/types";
 
-type LoginServerActionResponse = AuthServerActionResponse & {
+type LoginServerActionResponse = BaseServerActionResponse & {
   user: {
     username: string;
     id: string;
@@ -24,7 +24,7 @@ export async function loginAction(
 
   const resJson = await res.json();
 
-  await createSession({ id: resJson.user.id });
+  await createSession({ userId: resJson.user.id });
 
   return resJson;
 }
