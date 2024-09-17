@@ -1,22 +1,18 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
-import { decrypt } from "./lib/session";
+import { decrypt, extractPayload } from "./lib/session";
 
 export const config = {
   matcher: ["/api/test", "/test"],
 };
 
 async function checkTokenExpiry(token?: string) {
-  if (!token) return false;
+  const payload = await extractPayload(token);
 
-  const tokenPayload = await decrypt(token);
+  if (!payload) return false;
 
-  if (!tokenPayload) return false;
-
-  const {
-    payload: { exp },
-  } = tokenPayload;
+  const { exp } = payload;
 
   if (!exp || exp * 1000 < Date.now()) {
     return false;
