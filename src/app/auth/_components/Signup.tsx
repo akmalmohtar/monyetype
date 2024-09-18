@@ -10,12 +10,12 @@ import { signupAction } from "@/actions/auth/signupAction";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthServerActionResponse, SignupInfo, SignupSchema } from "@/types";
+import { BaseServerActionResponse, SignupInfo, SignupSchema } from "@/types";
 import { cn } from "@/lib/utils";
 
 export default function Signup() {
   const [submissionStatus, setSubmissionStatus] =
-    useState<AuthServerActionResponse | null>(null);
+    useState<BaseServerActionResponse | null>(null);
   const {
     handleSubmit,
     control,
