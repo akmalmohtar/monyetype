@@ -1,10 +1,10 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
-import { decrypt, extractPayload } from "./lib/session";
+import { extractPayload } from "./lib/session";
 
 export const config = {
-  matcher: ["/api/test", "/test"],
+  matcher: ["/api/test", "/api/score"],
 };
 
 async function checkTokenExpiry(token?: string) {

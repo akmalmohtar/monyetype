@@ -1,6 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { JWTPayload, JWTVerifyResult, SignJWT, jwtVerify } from "jose";
+import { JWTPayload, SignJWT, jwtVerify } from "jose";
 
 const secretKey = process.env.SESSION_SECRET;
 const key = new TextEncoder().encode(secretKey);
@@ -57,7 +57,9 @@ export async function decrypt(token: string) {
 }
 
 export async function createSession(data: JWTPayload) {
-  const session = await encrypt(data, tokenExp.access);
+  const expires = tokenExp.refresh;
+
+  const session = await encrypt(data, expires);
 
   if (!session) {
     const message = "Fail to create session.";
@@ -65,12 +67,13 @@ export async function createSession(data: JWTPayload) {
     throw new Error(message);
   }
 
+  console.log("creating token with expiry refresh");
   cookies().set("session", session, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
     path: "/",
-    expires: tokenExp.access,
+    expires,
   });
 }
 
