@@ -1,0 +1,17 @@
+name: Build Nextjs
+run-name: builds the Nextjs application
+on:
+  push:
+    branches:
+      - feature/*
+
+jobs:
+  build-nextjs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo to VM
+        uses: actions/checkout@v4
+      - name: Install packages
+        run: npm install
+      - name: Build Nextjs
+        run: npm run build
