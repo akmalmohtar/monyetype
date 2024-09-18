@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Button } from "../../../../components/ui/button";
 import { useRhythmTimer } from "@/hooks/use-rhythm-timer";
 import { cn } from "@/lib/utils";
@@ -8,6 +8,8 @@ import { motion } from "framer-motion";
 import SettingModal from "./SettingModal";
 import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
 import { useRandomLetter } from "@/hooks/use-random-letter";
+import useSWRMutation from "swr/mutation";
+import { mutater } from "@/lib/swr";
 
 function ScoreBox({ score }: { score: number }) {
   return (
@@ -140,7 +142,9 @@ export function Rhythm() {
   const [score, setScore] = useState(0);
   const [started, setStarted] = useState(false);
   const [gameWin, setGameWin] = useState(false);
+  const [gameEnded, setGameEnded] = useState(false);
   const { letters, get } = useRandomLetter(rhythmSettings);
+  const { trigger } = useSWRMutation("/api/score", mutater);
 
   const handleStartStopGame = () => {
     if (started) {
@@ -159,7 +163,14 @@ export function Rhythm() {
     gResetGame();
     setScore(0);
     setGameWin(false);
+    setGameEnded(true);
   };
+
+  useEffect(() => {
+    if (gGameOver || gameOver) {
+      setGameEnded(true);
+    }
+  }, [gGameOver, gameOver]);
 
   // To trigger render next letter
   useEffect(() => {
@@ -168,12 +179,14 @@ export function Rhythm() {
 
   // handle gameover
   useEffect(() => {
-    if (gameOver || gGameOver) {
+    if (gameEnded) {
       stop();
       gStop();
       setStarted(false);
+      console.log("triggering save score");
+      trigger({ score: Number(score) });
     }
-  }, [gameOver, gGameOver, setStarted, stop, gStop]);
+  }, [gameEnded, setStarted, stop, gStop]);
 
   // to trigger button press and score
   useEffect(() => {
