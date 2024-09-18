@@ -6,11 +6,11 @@ import { RhythmScoreSchema } from "@/types";
 import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
+  const timestamp = new Date(Date.now());
   const [{ score }, payload] = await Promise.all([
     req.json(),
     extractPayload(),
   ]);
-  const timestamp = new Date(Date.now());
 
   if (!payload) {
     return Response.json(

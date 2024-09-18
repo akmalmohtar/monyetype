@@ -17,6 +17,7 @@ export function useAuth() {
     setUsername(null);
   }, []);
 
+  // to check for presence of username in local storage
   useEffect(() => {
     if (_username) {
       setIsAuthenticated(true);
