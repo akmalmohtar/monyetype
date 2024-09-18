@@ -15,5 +15,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Install packages
         run: npm install
+      - name: Run postgres container
+        run: docker compose up -d postgres
       - name: Build Nextjs
         run: npm run build
+      - name: Stop containers
+        run: docker compose down
