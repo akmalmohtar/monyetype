@@ -10,12 +10,12 @@ import { loginAction } from "@/actions/auth/loginAction";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { LoginInfo, LoginSchema, AuthServerActionResponse } from "@/types";
+import { LoginInfo, LoginSchema, BaseServerActionResponse } from "@/types";
 import { cn } from "@/lib/utils";
 
 export default function Login() {
   const [submissionStatus, setSubmissionStatus] =
-    useState<AuthServerActionResponse | null>(null);
+    useState<BaseServerActionResponse | null>(null);
 
   const {
     handleSubmit,
