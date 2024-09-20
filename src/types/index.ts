@@ -51,5 +51,8 @@ export const LoginSchema = z.object({
 
 export const RhythmScoreSchema = z.object({
   userId: z.number(),
+  timestamp: z.date(),
   score: z.number(),
+  durationPlayed: z.number(),
+  speed: z.number(),
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Button } from "../../../../components/ui/button";
 import { useRhythmTimer } from "@/hooks/use-rhythm-timer";
 import { cn } from "@/lib/utils";
@@ -8,6 +8,9 @@ import { motion } from "framer-motion";
 import SettingModal from "./SettingModal";
 import { useRhythmSettingsStore } from "@/hooks/zustand/use-rhythm-settings";
 import { useRandomLetter } from "@/hooks/use-random-letter";
+import useSWRMutation from "swr/mutation";
+import { mutater } from "@/lib/swr";
+import { useGameStatus } from "@/hooks/use-game-status";
 
 function ScoreBox({ score }: { score: number }) {
   return (
@@ -128,8 +131,12 @@ export function Rhythm() {
       gameDuration: state.rhythmSettings.gameDuration,
       letterDuration: state.rhythmSettings.letterDuration,
     }));
+
+  // For duration per letter
   const { round, remainingTime, gameOver, start, skip, stop, resetGame } =
     useRhythmTimer(letterDuration);
+
+  // For duration of entire game
   const {
     remainingTime: gRemainingTime,
     start: gStart,
@@ -137,18 +144,22 @@ export function Rhythm() {
     gameOver: gGameOver,
     resetGame: gResetGame,
   } = useRhythmTimer(gameDuration);
-  const [score, setScore] = useState(0);
-  const [started, setStarted] = useState(false);
-  const [gameWin, setGameWin] = useState(false);
+
+  const [
+    { gameEnded, gameStarted, gameWon, score },
+    { addScore, endGame, retry, startStop, winGame },
+  ] = useGameStatus();
+
   const { letters, get } = useRandomLetter(rhythmSettings);
 
+  const { trigger } = useSWRMutation("/api/score", mutater);
+
   const handleStartStopGame = () => {
-    if (started) {
-      setStarted(false);
+    startStop();
+    if (gameStarted) {
       stop();
       gStop();
     } else {
-      setStarted(true);
       start();
       gStart();
     }
@@ -157,9 +168,14 @@ export function Rhythm() {
   const handleRetry = () => {
     resetGame();
     gResetGame();
-    setScore(0);
-    setGameWin(false);
+    retry();
   };
+
+  useEffect(() => {
+    if (gGameOver || gameOver) {
+      endGame();
+    }
+  }, [gGameOver, gameOver, endGame]);
 
   // To trigger render next letter
   useEffect(() => {
@@ -168,30 +184,32 @@ export function Rhythm() {
 
   // handle gameover
   useEffect(() => {
-    if (gameOver || gGameOver) {
+    if (gameEnded) {
       stop();
       gStop();
-      setStarted(false);
+
+      const durationPlayed = gameDuration - gRemainingTime;
+      trigger({ score, durationPlayed });
     }
-  }, [gameOver, gGameOver, setStarted, stop, gStop]);
+  }, [gameEnded]);
 
   // to trigger button press and score
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!started && letters[0] === event.key) {
+      if (!gameStarted && letters[0] === event.key) {
         start();
         gStart();
-        setStarted(true);
+        startStop();
       }
 
       // if correct letter pressed
       if (event.key === letters[0] && !gGameOver && !gameOver) {
-        setScore((prev) => prev + 1);
+        addScore();
         skip();
       }
 
       if (score >= gameDuration / 1000) {
-        setGameWin(true);
+        winGame();
       }
     };
 
@@ -201,23 +219,26 @@ export function Rhythm() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [
-    started,
+    addScore,
+    startStop,
+    winGame,
+    gameStarted,
+    score,
     letters,
     skip,
     start,
     gStart,
     gGameOver,
     gameOver,
-    score,
     gameDuration,
   ]);
 
   return (
     <div className="flex flex-col space-y-8 items-center justify-evenly">
       <div className="flex flex-col items-center justify-center h-40">
-        {gameOver || gGameOver ? (
+        {gameEnded ? (
           <ResultBox
-            win={gameWin}
+            win={gameWon}
             durationPlayed={gameDuration - gRemainingTime}
             score={score}
           />
@@ -266,7 +287,7 @@ export function Rhythm() {
           variant="akmalmohtar"
           className="w-[150px]"
         >
-          {started ? "Stop" : "Start"}
+          {gameStarted ? "Stop" : "Start"}
         </Button>
       )}
     </div>
