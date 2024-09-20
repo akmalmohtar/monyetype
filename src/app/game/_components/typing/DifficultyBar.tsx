@@ -1,6 +1,7 @@
 import React from "react";
-import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TDifficulty } from "@/types";
+import { motion } from "framer-motion";
 
 type DifficultyBarProps = {
   difficulty: TDifficulty;
@@ -12,7 +13,15 @@ export const DifficultyBar = ({
   onDifficultyChange,
 }: DifficultyBarProps) => {
   return (
-    <div className="pb-10">
+    <motion.div
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{
+        ease: "anticipate",
+        duration: 1,
+      }}
+      className="pb-10"
+    >
       <Tabs value={difficulty} onValueChange={onDifficultyChange}>
         <TabsList className="grid w-full grid-cols-3 rounded p-2">
           <TabsTrigger value="easy">Easy</TabsTrigger>
@@ -20,6 +29,6 @@ export const DifficultyBar = ({
           <TabsTrigger value="hard">Hard</TabsTrigger>
         </TabsList>
       </Tabs>
-    </div>
+    </motion.div>
   );
 };

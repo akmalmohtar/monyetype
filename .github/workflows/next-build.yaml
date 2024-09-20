@@ -1,0 +1,35 @@
+name: Build Nextjs
+run-name: builds the Nextjs application
+on:
+  push:
+    branches:
+      - feature/*
+      - fix/*
+      - refactor/*
+  workflow_dispatch:
+
+jobs:
+  build-nextjs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo to VM
+        uses: actions/checkout@v4
+      - name: Install packages
+        run: npm install
+      - name: Set up environment variables
+        run: |
+          echo BASE_URL=$BASE_URL >> .env
+          echo DB_URI=$DB_URI >> .env
+          echo SESSION_SECRET=$SESSION_SECRET >> .env
+          echo REFRESH_SESSION_SECRET=$REFRESH_SESSION_SECRET >> .env
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          DB_URI: ${{ secrets.DB_URI }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          REFRESH_SESSION_SECRET: ${{ secrets.REFRESH_SESSION_SECRET }}
+      - name: Run postgres container
+        run: docker compose up -d postgres
+      - name: Build Nextjs
+        run: npm run build
+      - name: Stop containers
+        run: docker compose down
