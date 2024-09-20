@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { memo, useEffect } from "react";
 import { Button } from "../../../../components/ui/button";
 import { useRhythmTimer } from "@/hooks/use-rhythm-timer";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,7 @@ import useSWRMutation from "swr/mutation";
 import { mutater } from "@/lib/swr";
 import { useGameStatus } from "@/hooks/use-game-status";
 
-function ScoreBox({ score }: { score: number }) {
+const ScoreBox = memo(function ScoreBox({ score }: { score: number }) {
   return (
     <div className="flex flex-row justify-between w-[135px]">
       <span className="text-2xl">Score: </span>
@@ -30,9 +30,9 @@ function ScoreBox({ score }: { score: number }) {
       </motion.span>
     </div>
   );
-}
+});
 
-function ResultBox({
+const ResultBox = memo(function ResultBox({
   win,
   durationPlayed,
   score,
@@ -50,9 +50,9 @@ function ResultBox({
       <span>{`Your speed: ${speed} character(s) per second`}</span>
     </div>
   );
-}
+});
 
-function LetterDisplayBox({
+const LetterDisplayBox = memo(function LetterDisplayBox({
   letters,
   enableNextLetter = false,
 }: {
@@ -98,9 +98,9 @@ function LetterDisplayBox({
       )}
     </div>
   );
-}
+});
 
-function TimerBox({
+const TimerBox = memo(function TimerBox({
   label,
   remainingTime,
   duration,
@@ -122,7 +122,7 @@ function TimerBox({
       </span>
     </span>
   );
-}
+});
 
 export function Rhythm() {
   const { gameDuration, letterDuration, ...rhythmSettings } =
@@ -272,7 +272,7 @@ export function Rhythm() {
         <TimerBox remainingTime={gRemainingTime} duration={gameDuration} />
         <SettingModal onOpen={handleRetry} />
       </motion.div>
-      {gameOver || gGameOver ? (
+      {gameEnded ? (
         <Button
           onClick={handleRetry}
           variant="akmalmohtar"
@@ -283,7 +283,6 @@ export function Rhythm() {
       ) : (
         <Button
           onClick={handleStartStopGame}
-          disabled={gameOver || gGameOver}
           variant="akmalmohtar"
           className="w-[150px]"
         >
