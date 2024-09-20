@@ -7,7 +7,9 @@ export const rhythmScores = pgTable("rhythm_scores", {
     .references(() => users.id)
     .notNull(),
   timestamp: timestamp("timestamp").notNull(),
-  score: real("score").notNull(),
+  score: integer("score").notNull(),
+  durationPlayed: real("duration_played").notNull(),
+  speed: real("speed").notNull(),
 });
 
 export type TRhythmScore = typeof rhythmScores.$inferSelect;

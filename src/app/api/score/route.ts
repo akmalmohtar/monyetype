@@ -7,10 +7,11 @@ import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
   const timestamp = new Date(Date.now());
-  const [{ score }, payload] = await Promise.all([
+  const [{ score, durationPlayed }, payload] = await Promise.all([
     req.json(),
     extractPayload(),
   ]);
+  const speed = (score / durationPlayed) * 1000;
 
   if (!payload) {
     return Response.json(
@@ -26,7 +27,10 @@ export async function POST(req: Request) {
 
   const validateFields = RhythmScoreSchema.safeParse({
     userId,
+    timestamp,
     score,
+    durationPlayed,
+    speed,
   });
 
   if (!validateFields.success) {
@@ -45,7 +49,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    await db.insert(rhythmScores).values({ userId, timestamp, score });
+    await db
+      .insert(rhythmScores)
+      .values({ userId, timestamp, score, durationPlayed, speed });
     return Response.json(
       { success: true, message: "User score updated" },
       { status: 201 },
