@@ -1,8 +1,6 @@
-import TypingTest from "@/components/Typing";
-import React from "react";
+import { routes } from "@/lib/routes"
+import { redirect } from "next/navigation"
 
-const App = () => {
-  return <TypingTest/>;
-};
-
-export default App;
+export default function App() {
+  redirect(routes.game)
+}
